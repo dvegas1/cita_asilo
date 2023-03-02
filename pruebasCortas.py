@@ -223,15 +223,14 @@ arr = [
 # print(group_by_3(arr))
 
 #logger = logging.getLogger(__name__)
+#74693820405493:g - 16
 
-payload = "username=dvegas1&provinciaGeneral=2&sede=0&tramite_oficina=0&tramite_cuperto_policial=0&typeDoc=0&doc=19452357&name=Darwin Vegas&birth=1990&country=1&password=12345&"
-caracter_remove = payload[-1:len(payload)]
-print(caracter_remove)
-if(caracter_remove == '&'):
-   payload = payload[:-1]
-   print(payload)
+_token = '1234asadsda567854554asdasdada65465465465465465465465456465464989asasdasd89898989828989191'
+#print(str(random.randint(9999, 99999999999999)) + ":g")
+#print(_token[0:16])
 
+#print(_token[0:8])
+#print(_token[-8:len(_token)])
 
-
-
-#print(random.randint(9999, 99999999999999))
+token =  str(_token[0:8]) + str(_token[-8:len(_token)])
+print(token)

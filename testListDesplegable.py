@@ -10,13 +10,8 @@ import nest_asyncio
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import Application, CommandHandler, ContextTypes, CallbackQueryHandler
 from itertools import zip_longest
-import telegram
 import json
 import constants
-import utilis
-import unicodedata
-import base64
-import logging
 
 
 class testList:
@@ -36,7 +31,7 @@ class testList:
     _paginatorGeneral = 20
     _reply_text = []
     _add_title_text = ""
-    extra_params={"tokeUser": "S/T"}
+    extra_params = {"tokeUser": "S/T","usernameAsiloBot": "-","usernameTelegram": "-"}
 
     # 0:COYNTRY
     # 1:PROVINCE
@@ -158,37 +153,37 @@ class testList:
         _title_list = ""
 
         if self.case == 1:
-            _title_list = constants.SUCESS_PROVINCE_TEXT
+            _title_list = constants.SELECT_PROVINCE_TEXT
         elif self.case == 2:
-            _title_list = constants.SUCESS_OFICINE_TEXT
+            _title_list = constants.SELECT_OFICINE_TEXT
         elif self.case == 3:
-            _title_list = constants.SUCESS_OFICINE_EXTRANJERA_TEXT
+            _title_list = constants.SELECT_OFICINE_EXTRANJERA_TEXT
         elif self.case == 4:
-            _title_list = constants.SUCESS_TRAMITE_CUERPO_POLICIAL_TEXT
+            _title_list = constants.SELECT_TRAMITE_CUERPO_POLICIAL_TEXT
         elif self.case == 5:
-            _title_list = constants.SUCESS_TIPO_DOC_TEXT
+            _title_list = constants.SELECT_TIPO_DOC_TEXT
         elif self.case == 6:
-            _title_list = constants.SUCESS_COUNTRY_TEXT
+            _title_list = constants.SELECT_COUNTRY_TEXT
         elif self.case == 7:
-            _title_list = constants.SUCESS_CONFIRM_DOCUMENT_CONFIRM + self._add_title_text
+            _title_list = constants.CONFIRM_DOCUMENT_CONFIRM_TEXT + self._add_title_text
         elif self.case == 8:
-            _title_list = constants.SUCESS_CONFIRM_NAME_CONFIRM + self._add_title_text
+            _title_list = constants.CONFIRM_CONFIRM_NAME_TEXT + self._add_title_text
         elif self.case == 9:
-            _title_list = constants.SUCESS_CONFIRM_BIRTH_CONFIRM + self._add_title_text
+            _title_list = constants.CONFIRM_CONFIRM_BIRTH_CONFIRM_TEXT + self._add_title_text
         elif self.case == 10:
-            _title_list = constants.SUCESS_CONFIRM_ACTIONS_TEXT
+            _title_list = constants.SELECT_CONFIRM_ACTIONS_TEXT
         elif self.case == 11:
-            _title_list = constants.SUCESS_CONFIRM_PLANS_TEXT
+            _title_list = constants.SELECT_CONFIRM_PLANS_TEXT
         elif self.case == 12:
-            _title_list = constants.SUCESS_CONFIRM_PAYMENT_METHOD_TEXT
+            _title_list = constants.CONFIRM_CONFIRM_PAYMENT_METHOD_TEXT
         elif self.case == 13:
-            _title_list = constants.SUCESS_REFERENCE_PAYMENT_CONFIRM + self._add_title_text
+            _title_list = constants.CONFIRM_REFERENCE_PAYMENT_TEXT + self._add_title_text
         elif self.case == 14:
-            _title_list = constants.SUCESS_USERNAME_CONFIRM + self._add_title_text
+            _title_list = constants.CONFIRM_USERNAME_TEXT + self._add_title_text
         elif self.case == 15:
-            _title_list = constants.SUCESS_PASSWORD_CONFIRM + self._add_title_text
+            _title_list = constants.CONFIRM_PASSWORD_TEXT + self._add_title_text
         elif self.case == 16:
-           _title_list = constants.SUCESS_CONFIRM_PAYMENT_TEXT
+           _title_list = constants.CONFIRM_CONFIRM_PAYMENT_TEXT
         else:
             _title_list = "Seleccione:"
 
@@ -197,5 +192,6 @@ class testList:
                 _title_list, reply_markup=marku_countrys, parse_mode="MarkdownV2"
             )
         )
+        
 
         self.logger.info("Fin.", extra=self.extra_params)
