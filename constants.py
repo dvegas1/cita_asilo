@@ -55,7 +55,7 @@ SELECT_CONFIRM_ACTIONS_TEXT = "Seleccione una acción:"
 
 
 SUCESS_CONFIRM_PLANS = 110
-SELECT_CONFIRM_PLANS_TEXT = "Seleccione una Plan:"
+SELECT_CONFIRM_PLANS_TEXT = "Seleccione un Plan:"
 
 
 SUCESS_CONFIRM_PAYMENT_METHOD = 111
@@ -91,6 +91,7 @@ USER_REGISTER_PROCESS_TEXT = "Se esta realizando el registro de su usuario 🔑.
 USER_REGISTER_SUCESS_TEXT = "✔️ Registro realizado con éxito."
 SUCESS_USER_LOGOUT_SUCESS_TEXT = "✔️ Cierre de sesión realizado con éxito."
 WARNING_USER_TEXT_GENERAL_TEXT = "⛔️ No se logro registrar el usuario, por favor intente de nuevo en unos minutos."
+WARNING_USER_LOGIN_TEXT_GENERAL_TEXT = "⛔️ No se logro iniciar con su usuario, por favor intente de nuevo en unos minutos."
 WARNING_USER_LOGOUT_SUCESS_TEXT = "Por favor ingrese su nombre de usuario y contraseña."
 
 WARNING_USER_INTENTS_TEXT = "😔 Hubo un problema realizando su registro, intentando nuevamente por {} vez, si el problema persiste espere unos minutos e intente nuevamente."

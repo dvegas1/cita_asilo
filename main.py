@@ -45,13 +45,14 @@ import random
 import time
 import datetime
 import time
+import inspect
 
 CHOOSING, TYPING_REPLY, TYPING_CHOICE, BIO, SIGNUP, DOCUMENT, SIGNUP, TOKEN = range(
     8)
 
 
 class citaAsilobot:
-
+    _text_intentns = ["Primera", "Segunda", "Tercera y ultima"]
     application = ""
     token = "5940401924:AAHUZEP6BtTOWPk2Zvy5uQOatI8b8JySVu8"
     update = ""
@@ -62,6 +63,26 @@ class citaAsilobot:
     text_Loading = "🔤🔤🔤🔤🔤🔤🔤🔤"
 
     dat = {
+        "provinciaGeneral": -1,
+        "sede": -1,
+        "tramite_oficina": -1,
+        "tramite_cuperto_policial": -1,
+        "typeDoc": -1,
+        "doc": "",
+        "name": "",
+        "birth": -1,
+        "country": -1,
+        "plans": -1,
+        "action": -1,
+        "payment": False,
+        "TypePayment": -1,
+        "reference_payment": "",
+        "sucess": False,
+        constants.USERNAME: "",
+        constants.PASSWORD: ""
+    }
+    
+    datDefault = {
         "provinciaGeneral": -1,
         "sede": -1,
         "tramite_oficina": -1,
@@ -100,6 +121,7 @@ class citaAsilobot:
         constants.USERNAME: "",
         constants.PASSWORD: ""
     }
+    
     chaIds = -1
     optionValidate = -1
     optionValidat_Text = ""
@@ -108,13 +130,14 @@ class citaAsilobot:
     chatSend = ""
     chatMsgUser = []
     url = "http://localhost:3004/server"
-    tokeUser = ""
+    tokeUser = "S/T"
     tokenAsiloBot = ""
     extra_params = {"tokeUser": "S/T","usernameAsiloBot": "-","usernameTelegram": "-"}
     chat_id = ''
     responseSingup = ''
     isLogin = False
     blockUser = False
+    isErrorFormulary = False
     
    
 
@@ -157,6 +180,8 @@ class citaAsilobot:
         
         self.update = update
         
+        await self.setTokenUser()
+        
         self.logger.info(constants.START, extra=self.extra_params)
         
         
@@ -169,12 +194,10 @@ class citaAsilobot:
             self.token = ""
             self.tokenAsiloBot = ""
             self.usernameAsiloBot = ""
-            self.tokeUser = ""
+            self.tokeUser = "S/T"
             self.dat[constants.USERNAME] = ""
             self.dat[constants.PASSWORD] = ""
-            
-            
-            await self.setTokenUser()
+            self.dat = self.datDefault
             
             await self.setUserTelegram()
     
@@ -183,29 +206,36 @@ class citaAsilobot:
             self.logger.info(constants.END, extra=self.extra_params)
         
     async def loginAsiloBot(self):
+        
         self.logger.info(constants.START, extra=self.extra_params)
+        _error=False
         
         if(self.dat['username'] != "" and self.dat[constants.PASSWORD] != ""):
-            payload = "username="+self.dat['username']+"&password="+self.dat[constants.PASSWORD]
+            payload = "username="+self.dat[constants.USERNAME]+"&password="+self.dat[constants.PASSWORD]
             headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
-            response = requests.request(
-                "POST", self.url + "/users_asilobot/loginAsiloBot", headers=headers, data=payload
-            )
-            _response = json.loads(response.text)
+            try:
+                response = requests.request(
+                    "POST", self.url + "/users_asilobot/loginAsiloBot", headers=headers, data=payload
+                )
+                _response = json.loads(response.text)
+                
+                self.logger.info(_response,extra=self.extra_params)
+            except Exception as error:
+                self.logger.error(error,extra=self.extra_params)
+                _error = True
             
-            self.logger.info(_response,extra=self.extra_params)
-            
-            await self.registerUser_validate(_response)
-            
-            
+            if(not _error):
+                await self.registerUser_validate(_response)
+       
         else:
             await self.sendMessageTelChatId(self.chat_id, self.update, constants.WARNING_USER_LOGOUT_SUCESS_TEXT)
             self.isLogin = True
             await self.validateLoginUser()
             
-            
+        self.logger.warning("Error in login %s",_error, extra=self.extra_params)
         self.logger.info(constants.END, extra=self.extra_params)
+        return _error
         
         
         
@@ -214,21 +244,21 @@ class citaAsilobot:
         error = False
         self.isLogin = True
         
-
         try:
-            if self.dat[constants.USERNAME] == "":
-                error = True
-                await self.sendMessageTelChatId(self.chat_id, self.update, constants.ENTER_USERNAME_TEXT, 4)
-                return False
-                
-            if self.dat[constants.PASSWORD] == "":
-                error = True
-                await self.sendMessageTelChatId(self.chat_id, self.update, constants.ENTER_PASSWORD_TEXT, 5)
-                return False
-            
-            if(not error):
-                await self.loginAsiloBot()
-            
+            if(self.dat[constants.USERNAME] == "" or self.dat[constants.PASSWORD] == ""):
+                if self.dat[constants.USERNAME] == "":
+                    await self.sendMessageTelChatId(self.chat_id, self.update, constants.ENTER_USERNAME_TEXT, 6)
+                    return False
+                    
+                if self.dat[constants.PASSWORD] == "":
+                    await self.sendMessageTelChatId(self.chat_id, self.update, constants.ENTER_PASSWORD_TEXT, 7)
+                    return False
+            else:
+                if(not error):
+                    isErrorLogin = await self.loginAsiloBot()
+                    if(isErrorLogin):
+                        await self.sendMessageTelChatId(self.chat_id, self.update, constants.WARNING_USER_LOGIN_TEXT_GENERAL_TEXT, -1)
+                        
         except TimedOut as timedOutError:
               error = True
               self.logger.error(timedOutError, extra=self.extra_params)
@@ -237,8 +267,15 @@ class citaAsilobot:
               self.logger.error(networkError, extra=self.extra_params)
         except Exception as errors:
               error = True
-              self.logger.error(errors, extra=self.extra_params)
-
+              
+              _finError = str(errors).find("Failed to establish")
+              if(_finError != -1):
+                  self.logger.warning(errors, extra=self.extra_params)
+                  
+                      
+              else:
+                  self.logger.error(errors, extra=self.extra_params)
+ 
         if error:
             await self.clearMsg(True, self.update)
             await self.clearMsgText(True, self.update)
@@ -250,22 +287,20 @@ class citaAsilobot:
     async def setIdChat(self):
         update_jsonStr = json.dumps(self.update.to_dict())
         update_json = json.loads(update_jsonStr)
-        
-        await self.clearMsg(True, self.update)
-        await self.clearMsgText(True, self.update)
 
         if(self.chat_id == ''):
            self.chat_id = update_json['message']['chat']['id']
 
     async def LoginUser(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-        await self.setUserTelegram()
-        
-        if(self.blockUser):
-            await self.sendMessageTelChatId(self.chat_id, self.update, constants.BLOCKED_USER_TEXT, -1)
-        
         self.logger.info(constants.START, extra=self.extra_params)
         self.update = update
         self.context = context
+        
+        await self.setUserTelegram()
+        await self.setTokenUser()
+        
+        if(self.blockUser):
+            await self.sendMessageTelChatId(self.chat_id, self.update, constants.BLOCKED_USER_TEXT, -1)
         
         self.isLogin = True
         
@@ -275,11 +310,13 @@ class citaAsilobot:
             await self.sendMessageTelChatId(self.chat_id, self.update, constants.WARNING_USER_ALREADY_LOGIN.replace("{username}", self.usernameAsiloBot), -1)
             return
         
-        
         if(self.dat[constants.USERNAME] == "" or self.dat[constants.PASSWORD] == ""):
-            validLogin = await self.validateLoginUser()
-        
-            
+            await self.validateLoginUser()
+        else:
+            isErrorLogin = await self.loginAsiloBot()
+            if(isErrorLogin):
+                await self.sendMessageTelChatId(self.chat_id, self.update, constants.WARNING_USER_LOGIN_TEXT_GENERAL_TEXT, -1)
+                
         self.logger.info(constants.END, extra=self.extra_params)
 
     
@@ -313,13 +350,19 @@ class citaAsilobot:
                 
             self.tokeUser = str(tokenSignup[0:8]) + str(tokenSignup[-8:len(tokenSignup)])
                 
-            self.usernameAsiloBot = self.dat['username']
+            self.usernameAsiloBot = self.dat[constants.USERNAME]
                 
             self.extra_params = {"tokeUser": self.tokeUser,"usernameAsiloBot":self.usernameAsiloBot,"usernameTelegram":self.usernameTelegram}
         
             if(self.isLogin):
+                await self.clearMsg(True, self.update)
+                await self.clearMsgText(True, self.update)
+                
                 await self.sendMessageTelChatId(self.chat_id, self.update, constants.SUCESS_USER_LOGIN_TEXT, -1)
             else:
+                await self.clearMsg(True, self.update)
+                await self.clearMsgText(True, self.update)
+                
                 await self.sendMessageTelChatId(self.chat_id, self.update, constants.USER_REGISTER_SUCESS_TEXT, -1)
                 self.logger.info(constants.USER_REGISTER_SUCESS_TEXT, extra=self.extra_params)
             
@@ -349,18 +392,26 @@ class citaAsilobot:
                 
                 error_msg = _json["errors"]["msg"]
                 
+                await self.clearMsg(True, self.update)
+                await self.clearMsgText(True, self.update)
+                
                 if error_msg == constants.WARNING_API_USERNAME_ALREADY_EXIST:
                     self.dat[constants.USERNAME] = ""
                     await self.sendMessageTelChatId(self.chat_id, self.update, constants.WARNING_API_USERNAME_ALREADY_EXIST_TEXT, -1)
+                    self.isErrorFormulary = True
                     await self.validateFieldTextUser()
                 
                 if error_msg == constants.WARNING_API_WRONG_PASSWORD or error_msg == constants.WARNING_API_USER_DOES_NOT_EXIST:
                     self.dat[constants.USERNAME] = ""
                     self.dat[constants.PASSWORD] = ""
+                    self.isErrorFormulary = True
                     await self.sendMessageTelChatId(self.chat_id, self.update, constants.WARNING_API_WRONG_PASSWORD_TEXT, -1)
+                    await self.clearMsgText(True, self.update)
+                    await self.clearMsg(True, self.update)
                     await self.validateLoginUser()
                         
                 if error_msg == constants.BLOCKED_USER:
+                    self.isErrorFormulary = True
                     self.timBlockUser()
                     self.blockUser = True
                     self.dat[constants.USERNAME] = ""
@@ -375,12 +426,13 @@ class citaAsilobot:
             return False
 
     async def sendMessageTelChatId(self, chat_id, update, optionValidat_Text="", optionValidate=-1, add_clearList=True):
-       sucess = False
+       sucess = True
+       error_str = ""
 
        try:
-          while(not sucess):
              self.optionValidate = optionValidate
              self.optionValidat_Text = optionValidat_Text
+             
              self.chatSend = await self.bot.send_message(
                  chat_id=chat_id, text=optionValidat_Text
              )
@@ -389,18 +441,23 @@ class citaAsilobot:
                 self.chatMsgUser.append(
                     [self.chatSend.chat.id, self.chatSend.message_id])
 
-             sucess = True
-             self.logger.info(sucess, extra=self.extra_params)
+             self.logger.info("Message send:%s",sucess, extra=self.extra_params)
        except TimedOut as timedOutError:
            self.logger.error(timedOutError, extra=self.extra_params)
+           error_str = str(timedOutError)
            sucess = False
        except NetworkError as networkError:
            self.logger.error(networkError, extra=self.extra_params)
+           error_str = str(networkError)
            sucess = False
        except Exception as errors:
            self.logger.error(errors, extra=self.extra_params)
+           error_str = str(errors)
            sucess = False
-
+           
+       if(not sucess and error_str.find("not found") == -1):
+           await self.sendMessageTelChatId(update,optionValidat_Text,optionValidate,add_clearList)
+ 
     async def sendesplegableButton(self, dat=[], case=-1, sucess_code=-1, _paginatorLisColumm=2, _paginatorGeneral=10, _add_title_text="", actions=0, page=-1):
        error = False
        try:
@@ -435,6 +492,8 @@ class citaAsilobot:
 
        if(error):
          time.sleep(3)
+         await self.clearMsg(True, self.update)
+         await self.clearMsgText(True, self.update)
          await self.sendesplegableButton(dat=dat,case=case,sucess_code=sucess_code,_paginatorLisColumm=_paginatorLisColumm,_paginatorGeneral=_paginatorGeneral,_add_title_text=_add_title_text)
 
     async def registerUser(self) -> int:
@@ -580,15 +639,14 @@ class citaAsilobot:
            self.logger.error(errors, extra=self.extra_params)
 
        if(errorRequest and not sucess_Singup):
-           _text_intentns = ["Primera", "Segunda", "Tercera y ultima"]
+           
 
            error_intents = False
            await self.clearMsg(True, self.update)
            await self.clearMsgText(True, self.update)
            self.responseSingoToJson = ''
            for i in range(0, 3):
-
-               await self.sendMessageTelChatId(self.chat_id, self.update, constants.WARNING_USER_INTENTS_TEXT.replace("{}", _text_intentns[i]), -1)
+               await self.sendMessageTelChatId(self.chat_id, self.update, constants.WARNING_USER_INTENTS_TEXT.replace("{}", self._text_intentns[i]), -1)
                time.sleep(5)
 
                try:
@@ -633,9 +691,11 @@ class citaAsilobot:
     async def setTokenUser(self):
        self.logger.info(constants.START, extra=self.extra_params)
 
-       if self.tokeUser == "":
+       if self.tokeUser == "" or self.tokeUser == "S/T":
           self.tokeUser = str(random.randint(9999, 99999999999999)) + ":g"
           self.extra_params['usernameAsiloBot'] = ""
+          
+       self.logger.info(constants.END, extra=self.extra_params)
 
     async def setUserTelegram(self):
        try:
@@ -651,6 +711,10 @@ class citaAsilobot:
     async def signup(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         self.logger.info(constants.START, extra=self.extra_params)
         
+        if(self.update != ""):
+            await self.clearMsg(True, self.update)
+            await self.clearMsgText(True, self.update)
+            
         self.update = update
         self.context = context
         
@@ -663,17 +727,13 @@ class citaAsilobot:
         
         await self.setUserTelegram()
             
-        await self.setUserTelegram()
-        
         self.logger.info(update, extra=self.extra_params)
         
-
         self.chat_id = update.message.chat_id
 
         await self.setTokenUser()
-
-        #await self.clearMsg(True, update)
-        #await self.clearMsgText(True, update)
+        await self.clearMsg(True, update)
+        await self.clearMsgText(True, update)
         await self.validateFieldTextUser()
 
         self.logger.info(constants.END, extra=self.extra_params)
@@ -736,7 +796,13 @@ class citaAsilobot:
         error = False
         self.optionValidate = -1
         self.optionValidat_Text = ""
-
+        
+        if(not self.isErrorFormulary):
+            await self.clearMsg(True, self.update)
+            await self.clearMsgText(True, self.update)
+            
+        self.isErrorFormulary = False
+        
         try:
             if self.dat["provinciaGeneral"] == -1:
                 dat = self.arraysCites.provinces
@@ -775,7 +841,6 @@ class citaAsilobot:
             if self.dat["name"] == "":
                 self.optionValidate = 1
                 await self.sendMessageTelChatId(self.chat_id, self.update, constants.ENTER_CONFIRM_NAME_TEXT, 1)
-
                 return
 
             if self.dat["birth"] == -1:
@@ -802,24 +867,6 @@ class citaAsilobot:
             if(self.tokenAsiloBot == ""):
                 return
 
-            if(self.usernameAsiloBot != ""):
-                if self.dat["plans"] == -1:
-                    self.optionValidate = -1
-                    await self.plans()
-                    return
-
-                if((self.dat['plans'] != -1 and self.dat['plans'] > 0) and self.dat['TypePayment'] != -1):
-                     dat = self.arraysCites.payment_method
-                     await self.sendesplegableButton(dat, 12, constants.SUCESS_CONFIRM_PAYMENT_METHOD, 3, 10)
-                     self.optionValidate = -1
-                     return
-
-                if((self.dat['plans'] > 0 and self.dat['TypePayment'] != -1) and self.dat['reference_payment'] == ''):
-                    dat = self.arraysCites.confirm
-
-                    await self.sendesplegableButton(
-                         dat, 16, constants.SUCESS_CONFIRM_PAYMENT, 3, 10, "")
-                    return
         except TimedOut as timedOutError:
               error = True
               self.logger.error(timedOutError, extra=self.extra_params)
@@ -894,7 +941,7 @@ class citaAsilobot:
         self.logger.info(constants.START, extra=self.extra_params)
         try:
             dat = self.arraysCites.confirm
-
+            
             await self.sendesplegableButton(
                 dat, 8, constants.SUCESS_CONFIRM_NAME, 2, 1, self.optionValidat_Text)
 
@@ -996,7 +1043,7 @@ class citaAsilobot:
             dat = self.arraysCites.plans
 
             await self.sendesplegableButton(
-                dat, 11, constants.SUCESS_CONFIRM_PLANS, 2, 15)
+                dat, 11, constants.SUCESS_CONFIRM_PLANS, 1, 15)
 
         except TimedOut as timedOutError:
                    error = True
@@ -1206,7 +1253,10 @@ class citaAsilobot:
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         
         error = False
-
+        
+        self.update = update
+        self.context = context
+        
         await self.setTokenUser()
         
         await self.setUserTelegram()
@@ -1289,14 +1339,12 @@ class citaAsilobot:
 
         self.logger.info("data in query:%s", query.data,
                          extra=self.extra_params)
-
+        
         json_object = {}
         try:
             json_object = json.loads(query.data)
         except Exception as errors:
             self.logger.warning(errors, extra=self.extra_params)
-            await self.clearMsg(True, update)
-            await self.clearMsgText(True, update)
             index, _actions = query.data.split("-")
             _index = int(index)
             _actions = int(_actions)
@@ -1327,7 +1375,6 @@ class citaAsilobot:
                 _index = json_object["index"]
                 self.dat["provinciaGeneral"] = _index
 
-                # await self.oficine()
                 await self.validateFieldTextUser()
                 return
             except Exception as errors:
@@ -1423,7 +1470,6 @@ class citaAsilobot:
                 if _text == constants.YES:
                        self.dat["doc"] = self.optionValidat_Text
                        await self.validateFieldTextUser()
-
                 else:
                        await self.validateFieldTextUser()
 
@@ -1459,31 +1505,6 @@ class citaAsilobot:
                 await self.clearMsg(True, update)
                 await self.clearMsgText(True, update)
                 await self.validateFieldTextUser()
-
-        elif json_object["action"] == constants.SUCESS_CONFIRM_NAME:
-            error = False
-            try:
-                await self.clearMsg(True, update)
-                await self.clearMsgText(True, update)
-                _text = self.arraysCites.confirm[json_object["index"]]
-                if _text == constants.YES:
-                       await self.clearMsgText(True, update)
-                       self.dat["name"] = self.optionValidat_Text
-                       await self.validateFieldTextUser()
-
-                else:
-                       await self.validateFieldTextUser()
-
-                return
-            except Exception as errors:
-                error = True
-                self.logger.error(errors, extra=self.extra_params)
-
-            if error:
-                await self.clearMsg(True, update)
-                await self.clearMsgText(True, update)
-                await self.validateFieldTextUser()
-
         elif json_object["action"] == constants.SUCESS_CONFIRM_BIRTH:
             error = False
             try:
@@ -1736,68 +1757,86 @@ class citaAsilobot:
         self.logger.info(constants.END, extra=self.extra_params)
 
     async def clearMsgText(self, clearChatHistoryButtos, update):
-        self.logger.info(constants.START, extra=self.extra_params)
+        self.logger.info(constants.START + ":" + inspect.stack()[1][3], extra=self.extra_params)
+        
         error = False
+        
+        updateReceiber = json.dumps(update.to_dict())
+        selfUpdate = json.dumps(update.to_dict())
+        
+        updateReceiber_json = json.loads(updateReceiber)
+        selfUpdate_json = json.loads(selfUpdate)
+        
+        #self.logger.info(selfUpdate, extra=self.extra_params)
+        #self.logger.info(selfUpdate_json, extra=self.extra_params)
+        error_str = ""
         
         if len(self.chatMsgUser) > 0:
             count = 0
             try:
                 for x in self.chatMsgUser:
-                    message_id = x[1]
                     chat_id = x[0]
+                    message_id = x[1]
                     #self.logger.info("Eliminando MsgChat:%s",
                                     # message_id, extra=self.extra_params)
-                    await self.bot.delete_message(chat_id=chat_id, message_id=message_id)
-                    del self.chatMsgUser[count]
-                    
+                    deleteMsg = await self.bot.delete_message(chat_id=self.chat_id, message_id=message_id)
+                    if(deleteMsg):
+                        del self.chatMsgUser[count]
             except TimedOut as timedOutError:
                 error = True
                 self.logger.error(timedOutError, extra=self.extra_params)
+                error_str = timedOutError
             except NetworkError as networkError:
-                if(str(networkError).find('not found')):
-                    self.logger.warning(networkError, extra=self.extra_params)
-                    del self.chatMsgUser[count]
-                else:
-                     error = True
-                     self.logger.error(networkError, extra=self.extra_params)
+                     self.logger.info(networkError,extra=self.extra_params)
+                     if(str(networkError).find("not found") != -1):
+                         self.logger.warning(networkError, extra=self.extra_params)
+                     else:
+                         error = True
+                         self.logger.error(networkError, extra=self.extra_params)
+                         
+                     error_str = networkError
 
             except Exception as errors:
-                error = True
-                self.logger.error(errors, extra=self.extra_params)
+                error_str = errors
+                self.logger.info(errors,self.extra_params)
+                if(str(errors).find("Message to delete not found") != -1):
+                    self.logger.warning(errors, extra=self.extra_params)
+                else:
+                    error = True
+                    self.logger.error(errors, extra=self.extra_params)
 
             if(error):
                time.sleep(1)
                await self.clearMsgText(clearChatHistoryButtos, update)
-                
+               
+              
+        count =+ 1      
         self.logger.info(constants.END, extra=self.extra_params)
 
     async def clearMsg(self, clearChatHistoryButtos, update):
-        self.logger.info(constants.START, extra=self.extra_params)
-        #self.logger.info(update, extra=self.extra_params)
+        self.logger.info(constants.START + ":" + inspect.stack()[1][3], extra=self.extra_params)
         error = False
-
+       # self.logger.info(update, extra=self.extra_params)
+        updateToDictJson = json.dumps(update.to_dict())
+        self.logger.info(updateToDictJson, extra=self.extra_params)
         try:
-               message_id = update.callback_query.message.message_id
-               chat_id = update.callback_query.message.chat.id
-               await self.bot.delete_message(chat_id=chat_id, message_id=message_id)
-               self.logger.info("Eliminando buttons:%s",
-                                message_id, extra=self.extra_params)
+               
+               if update.callback_query is not None:
+                   message_id = update.callback_query.message.message_id
+                   chat_id = update.callback_query.message.chat.id
+                   await self.bot.delete_message(chat_id=chat_id, message_id=message_id)
+                   self.logger.info("Eliminando Message_id:%s",message_id, extra=self.extra_params)
         except TimedOut as timedOutError:
                error = True
                self.logger.error(timedOutError, extra=self.extra_params)
         except NetworkError as networkError:
-              if(networkError == 'not found'):
-                    error = True
-                    self.logger.warning(networkError, extra=self.extra_params)
-              else:
-                    self.logger.error(networkError, extra=self.extra_params)
-
-        except Exception as errors:
-               if(str(error).find("NoneType")):
-                   self.logger.warning(errors, extra=self.extra_params)
+               if(str(networkError).find("not found") != -1):
+                   self.logger.warning(networkError, extra=self.extra_params)
                else:
-                   self.logger.error(errors, extra=self.extra_params)
                    error = True
+                   self.logger.error(networkError, extra=self.extra_params)
+        except Exception as errors:
+               self.logger.error(errors, extra=self.extra_params)
 
         if(error):
             time.sleep(3)
@@ -1805,48 +1844,104 @@ class citaAsilobot:
 
         self.logger.info(constants.END, extra=self.extra_params)
 
+    async def persistentBtns(self):
+        self.logger.info(constants.START, extra=self.extra_params)
+        arrBtnsPersistent = []
+        chat_id = self.update.message.chat_id
+        text = self.update.message.text
+        
+        if(self.loginAsiloBot != "" and self.tokenAsiloBot != ""):
+            if(not self.dat['payment'] and not self.dat['sucess']):
+                arrBtnsPersistent.append(['PLANES', 'REFERENCIA'])
+            else:
+                arrBtnsPersistent.append(['REFERENCIA', 'EJECUCIONES'])
+                
+        if(len(arrBtnsPersistent) > 0):
+            arrBtnsPersistent.append(['SALIR'])
+            reply_markup = ReplyKeyboardMarkup(arrBtnsPersistent)
+            await self.context.bot.send_message(chat_id=chat_id, text=text, reply_markup=reply_markup)
+            
+        self.logger.info(constants.END, extra=self.extra_params)
+            
+        
     async def handle_text(self, update, context):
         self.logger.info(constants.START, extra=self.extra_params)
-        text = update.message.text
-        chat_id = update.message.chat_id
-        messageId = update.message.message_id
+    
+        # keyboard = [
+        # ['PLANES', 'EJECUCIONES'],
+        # ['REFERENCIA', 'SALIR']
+        # ]
+        self.update = update
+        self.context = context
+        
+        updateReceiber = json.dumps(update.to_dict())
+        selfUpdate = json.dumps(update.to_dict())    
+        self.logger.info(selfUpdate,extra= self.extra_params)
+        
+        
+        text = ""
+        chat_id = ""
+        messageId = -1
+        
+        if(update.message.chat_id is not None):
+            text = update.message.text
+            chat_id = update.message.chat_id
+            messageId = update.message.message_id
+            self.logger.info("text:%s, chat id:%s, message id:%s",text,chat_id,messageId,extra=self.extra_params)
 
-
-        if text.find(".") !=-1:
-            text = text.replace(".", "\.")
+        if(update.message.chat.id is not None):
+            text = update.message.text
+            chat_id = update.message.chat.id
+            messageId = update.message.message_id
+            self.logger.info("text:%s, chat id:%s, message id:%s",text,chat_id,messageId,extra=self.extra_params)
             
             
+        await self.persistentBtns()
             
-
-        self.logger.info(text, extra=self.extra_params)
-
-        self.chatUserSend = chat_id
-        self.chatUserMsgId = messageId
-
-        self.chatMsgUser.append([chat_id, messageId])
-
-        self.chaIds = chat_id
-
-        self.optionValidat_Text = text
-
-        if self.optionValidate == 0:
-            await self.confirm_document()
-        elif self.optionValidate == 1:
-            await self.confirm_name()
-        elif self.optionValidate == 2:
-            await self.confirm_birth()
-        elif self.optionValidate == 3:
-            await self.confirm_reference_payment()
-        elif self.optionValidate == 4:
-            await self.confirm_username()
-        elif self.optionValidate == 5:
-            await self.confirm_password()
-        else:
-            await self.clearMsg(True, update)
-            await self.clearMsgText(True, update)
-
-            await self.sendMessageTelChatId(self.chat_id, self.update, constants.WARNING_USER_TEXT)
-
+        if(update.message.chat.id is not None and update.message.chat_id is not None and (chat_id != "" and messageId !=-1)):
+            
+            
+            if text.find(".") !=-1:
+                text = text.replace(".", "\.")
+                
+    
+            self.logger.info(text, extra=self.extra_params)
+    
+            self.chatUserSend = chat_id
+            self.chatUserMsgId = messageId
+    
+            self.chatMsgUser.append([chat_id, messageId])
+    
+            self.chaIds = chat_id
+    
+            self.optionValidat_Text = text
+            
+            self.logger.info(self.optionValidate,extra=self.extra_params)
+    
+            if self.optionValidate == 0:
+                await self.confirm_document()
+            elif self.optionValidate == 1:
+                await self.confirm_name()
+            elif self.optionValidate == 2:
+                await self.confirm_birth()
+            elif self.optionValidate == 3:
+                await self.confirm_reference_payment()
+            elif self.optionValidate == 4:
+                await self.confirm_username()
+            elif self.optionValidate == 5:
+                await self.confirm_password()
+            elif self.optionValidate == 6:
+                self.dat[constants.USERNAME] = self.optionValidat_Text
+                await self.validateLoginUser()
+            elif self.optionValidate == 7:
+                self.dat[constants.PASSWORD] = self.optionValidat_Text
+                await self.validateLoginUser()
+            else:
+                await self.clearMsg(True, update)
+                await self.clearMsgText(True, update)
+    
+                await self.sendMessageTelChatId(self.chat_id, self.update, constants.WARNING_USER_TEXT)
+    
         self.logger.info(constants.END, extra=self.extra_params)
 
     def main(self) -> None:
@@ -1857,8 +1952,8 @@ class citaAsilobot:
 
             self.logger.info(constants.START, extra=self.extra_params)
 
-            #self.application = Application.builder().token(self.token).build()
-            self.application = Application.builder().token(self.token).persistence(persistence).build()
+            self.application = Application.builder().token(self.token).build()
+            #self.application = Application.builder().token(self.token).persistence(persistence).build()
 
             
 
@@ -1871,9 +1966,10 @@ class citaAsilobot:
             self.application.add_handler(CommandHandler("login", self.LoginUser))
             
             self.application.add_handler(CommandHandler("close", self.LogoutUser))
-
+            
             self.application.add_handler(CallbackQueryHandler(self.button))
             
+
             self.application.add_handler(
                 MessageHandler(filters.TEXT, self.handle_text))
 
@@ -1885,9 +1981,10 @@ class citaAsilobot:
             error = True
 
         if(error):
-            self.logger.warning(constants.ERROR_RUN_MAIN_FAILE, extra=self.extra_params)
+            time.sleep(5)
             nest_asyncio.apply()
             citaAsilobot().main()
+            
 
         citaAsilobot().logger.info(constants.END, extra=citaAsilobot().extra_params)
 

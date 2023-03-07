@@ -7,7 +7,8 @@ Created on Fri Feb 10 21:12:47 2023
 
 class array_cites():
         
-    plans= ["Gratis: 3 veces al día (8:00 am, 15:00 pm, 21:00 pm).","Cada 5 minutos","Cada 10 minutos","Cada 20 minutos","Cada 1 hora","Cada 4 hora","Cada 8 hora","Cada 12 hora","Cada 24 hora"]
+    plans= ["Gratis: 3 veces al día (8:00 am, 15:00 pm, 21:00 pm).","Cada 5 minutos: 25 usd/Semanal","Cada 10 minutos: 23 usd/Semanal","Cada 20 minutos: 18 usd/Semanal","Cada 1 hora: 15 usd/Mensual","Cada 4 hora: 14 usd/Mensual","Cada 8 hora: 12 usd/Mensual","Cada 12 hora: 10 usd/Mensual","Cada 24 hora: 8 usd/Mensual"]
+    
     price_plans=[0,20,15,10,8,5,3,1,0.5]
     
     payment_method= ["Paypal","Btc","Usdt","Usdc","Zinli"]
