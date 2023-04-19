@@ -12,13 +12,15 @@ from telegram.ext import Application, CommandHandler, ContextTypes, CallbackQuer
 from itertools import zip_longest
 import json
 import constants
-
+import inspect
+import telegram
 
 class testList:
     application = ""
     token = "5940401924:AAHUZEP6BtTOWPk2Zvy5uQOatI8b8JySVu8"
     _message_id = []
-    update, context, application, dats, dat = range(5)
+    context, application, dats, dat = range(4)
+    update = ""
     page = 0
     pageLast = 0
     _init_ = 0
@@ -31,7 +33,9 @@ class testList:
     _paginatorGeneral = 20
     _reply_text = []
     _add_title_text = ""
-    extra_params = {"tokeUser": "S/T","usernameAsiloBot": "-","usernameTelegram": "-"}
+    extra_params = {"tokeUser": "S/T","usernameAsiloBot": "-", "usernameTelegram": "-"}
+    bot = telegram.Bot(token="5940401924:AAHUZEP6BtTOWPk2Zvy5uQOatI8b8JySVu8")
+    chat_id = None
 
     # 0:COYNTRY
     # 1:PROVINCE
@@ -49,7 +53,8 @@ class testList:
         paginatorGeneral=_paginatorGeneral,
         add_title_text="",
         logger=None,
-        extra_params=None
+        extra_params=None,
+        chat_id = None
     ):
         self.token = token
         self.update = update
@@ -63,6 +68,11 @@ class testList:
         self.logger = logger
         self.extra_params = extra_params
 
+        if(chat_id is None):
+            self.logger.info("None is chat_id",extra=self.extra_params)
+        else:
+            self.chat_id = chat_id
+
     async def group_by_3(self, lst, num):
         return [list(g) for g in zip(*[iter(lst)] * num)]
 
@@ -72,8 +82,15 @@ class testList:
     def final_list(self, test_list, x):
         return [test_list[i : i + x] for i in range(0, len(test_list), x)]
 
-    async def select(self, default=0, actions=0, page=-1):
-        self.logger.info("Inicio.", extra=self.extra_params)
+    async def select(self,update, default=0, actions=0, page=-1):
+        self.logger.info(constants.START + ":" + inspect.stack()[1][3], extra=self.extra_params)
+
+        if(self.chat_id is None):
+            self.logger.error("CHAT ID IS NONE, VALIDATE.",extra=self.extra_params)
+            return
+        else:
+            self.logger.info("Peticion con menu en el chat:%s",self.chat_id,extra=self.extra_params)
+
         if page != -1:
             self.page = page
 
@@ -187,11 +204,14 @@ class testList:
         else:
             _title_list = "Seleccione:"
 
-        self._reply_text.append(
-            await self.update.message.reply_text(
-                _title_list, reply_markup=marku_countrys, parse_mode="MarkdownV2"
-            )
-        )
+        #self.logger.info(self.update,extra=self.extra_params)
+        #await update.message.reply_text(
+        #        _title_list, reply_markup=marku_countrys, parse_mode="MarkdownV2"
+        #    )
+        self.logger.info("Chat id:%s",self.chat_id,extra=self.extra_params)
+        _msgMarkup = await self.bot.send_message(chat_id=self.chat_id, text=_title_list,reply_markup=marku_countrys )
         
-
+    
         self.logger.info("Fin.", extra=self.extra_params)
+
+        return _msgMarkup

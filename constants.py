@@ -9,7 +9,50 @@ START="Inicio."
 YES="Si"
 USERNAME="username"
 PASSWORD="password"
+PROVINCIAGENERAL="provinciaGeneral"
+SEDE="sede"
+TRAMITE_OFICINA="tramite_oficina"
+TRAMITE_CUERPO_POLICIAL="tramite_cuperto_policial"
+TYPEDOC="typeDoc"
+DOC="doc"
+NAME="name"
+BIRTH="birth"
+COUNTRY="country"
 
+
+#FORMULARY
+PAYMENT = "payment"
+SUCESS = "sucess"
+PLANS = "plans"
+REFERENCE_PAYMENT = "reference_payment"
+PLANS_TEX = "Planes"
+
+
+ENTRAR = "Entrar"
+CERRAR_SESION = "Cerrar sesión"
+HIDDEN = "Ocultar Menú"
+SHOW = "Mostrar Menú"
+LOGOUT="logout"
+
+SET_MENU_REFERENCE_PAYMENT="Referencia de pago"
+
+
+DATA_CHAT_ID = 'chat_id'
+DATA_TOKEN_USER = 'token_user'
+DATA_MSGS_MENU_SHOW_AN_DHIDE = 'msgsMenuShowAndHide'
+HIDDEN_MENU = 'hidden_menu'
+MENU_DAT = 'menuDat'
+DATA_USERTELEGRAM = 'usernameTelegram'
+CHAT_MSG_USER = 'chatMsgUser'
+CHAT_MSG_USER_BTN = 'chatMsgUserBtn'
+
+
+
+ACTION_USER_BOT_SIGNUP = 0
+ACTION_USER_BOT_LOGIN = 1
+ACTION_USER_BOT_LOGOUT = 2
+ACTION_USER_BOT_HELP = 3
+ACTION_USER_BOT_HELP = 3
 
 ERROR_RUN_MAIN_SECONDS =5
 ERROR_RUN_MAIN_FAILE="No se logro iniciar cita_asilo, se intentara luego de: " + str(ERROR_RUN_MAIN_SECONDS) + " Segundos."
@@ -87,6 +130,13 @@ SUCESS_USER_LOGIN_VALIDATE_TEXT = "Usuario validado con éxito."
 SUCESS_USER_LOGIN_USERNAME = 116
 SUCESS_USER_LOGIN_PASSWORD = 117
 
+SUCESS_CONFIRM_MENU_PLANS = 118
+SUCESS_CONFIRM_MENU_PLANS_TEXT = "Seleccione un Plan:"
+
+
+SUCESS_REFERENCE_MENU_PAYMENT = 119
+ENTER_REFERENCE_PAYMENT_TEXT = "Ingrese el Nro de referencia:"
+
 USER_REGISTER_PROCESS_TEXT = "Se esta realizando el registro de su usuario 🔑."
 USER_REGISTER_SUCESS_TEXT = "✔️ Registro realizado con éxito."
 SUCESS_USER_LOGOUT_SUCESS_TEXT = "✔️ Cierre de sesión realizado con éxito."
@@ -101,11 +151,13 @@ WARNING_USER_NOT_LOGIN_TEXT = "No dispone de cuenta iniciada por favor valla a /
 WARNING_USER_TEXT = "🤔 No conozco ese comando, consulte /help para obtener ayuda"
 WARNING_FIELD_EMPTY_OR_INVALID_TEXT = "🔎 Campo {} inválido o faltante se solicitara nuevamente para corregir los datos"
 
+USER_PLANS_SELECTMENU_TEXT = "Plan seleccionado con éxito."
+
 WARNING_MESSAGE_VERIFIED_TEXT = "Muchas gracias {}, apenas su pago sea verificado se le estara notificando"
 
 WARNING_API_USERNAME_ALREADY_EXIST_TEXT = '⛔️ El nombre de usuario ya se existe (👤👤).'
 
-WARNING_API_WRONG_PASSWORD_TEXT = 'Nombre de usuario o contraseña incorrecta.'
+WARNING_API_WRONG_PASSWORD_TEXT = '😣 Nombre de usuario o contraseña incorrecta.'
 
 BLOCKED_USER_TEXT1 = 'EL usuario se encuentra bloqueado, para desbloquear/recuperar su usuario por favor ingrese /recovery.'
 
@@ -114,10 +166,14 @@ BLOCKED_USER_TEXT = "Límite de intentos excedidos, Por favor espere "+str(BLOCK
 
 SUCESS_USER_LOGIN_TEXT = '✔️ Inicio con su cuenta exitosamente.'
 
-WARNING_USER_ALREADY_LOGIN = '⚠️ Ya existe una cuenta iniciada con {username}, Cierre session con /close y registre una nueva.'
+WARNING_USER_ALREADY_LOGIN = '⚠️ Ya existe una cuenta iniciada con {username}, Cierre session con /logout y registre una nueva.'
 
 #API
 WARNING_API_USERNAME_ALREADY_EXIST = 'USERNAME_ALREADY_EXISTS'
 WARNING_API_USER_DOES_NOT_EXIST = 'USER_DOES_NOT_EXIST'
 WARNING_API_WRONG_PASSWORD = 'WRONG_PASSWORD'
 BLOCKED_USER = 'BLOCKED_USER'
+
+WARNING_ERROR_GENERAL = 'Hubo un problema con su sulicitud Por favor intente de nuevo hubo un error al procesar su solicitud.'
+
+RESPONSE_API_CORE = 'Respuesta de api:{msg}.'
