@@ -218,6 +218,7 @@ class citaAsilobot:
 
             await self.sendMessageTelChatId(chat_id, update, constants.SUCESS_USER_LOGOUT_SUCESS_TEXT)
 
+            self.data.get(chat_id).update({constants.HIDDEN_MENU:True})
             await self.persistentBtns(update, True, chat_id)
             self.logger.info(constants.END, extra=self.extra_params)
 
@@ -379,7 +380,8 @@ class citaAsilobot:
 
             if(self.isLogin):
                 await self.sendMessageTelChatId(chat_id, update, constants.SUCESS_USER_LOGIN_TEXT, -1)
-                self.persistentBtns(True, chat_id)
+                self.data.get(chat_id).update({constants.HIDDEN_MENU:True})
+                await self.persistentBtns(update, True, chat_id)    
             else:
                 await self.sendMessageTelChatId(chat_id, update, constants.USER_REGISTER_SUCESS_TEXT, -1)
                 self.logger.info(
