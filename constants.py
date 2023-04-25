@@ -33,8 +33,10 @@ CERRAR_SESION = "Cerrar sesión"
 HIDDEN = "Ocultar Menú"
 SHOW = "Mostrar Menú"
 LOGOUT="logout"
+INFORMATION="information"
 
 SET_MENU_REFERENCE_PAYMENT="Referencia de pago"
+SET_MENU_METHOD_PAYMENT="Metodo de pago"
 
 
 DATA_CHAT_ID = 'chat_id'
@@ -107,7 +109,7 @@ CONFIRM_CONFIRM_PAYMENT_METHOD_TEXT = "Confirme método de pago:"
 SUCESS_REFERENCE_PAYMENT = 112
 ENTER_REFERENCE_PAYMENT_TEXT = "Ingrese el Nro de referencia:"
 CONFIRM_REFERENCE_PAYMENT_TEXT = "Confirma Nro de referencia:"
-VALIDATING_REFERENCE_PAYMENT_WAITING_VALIDATING_TEXT = "Validando referencia este proceso puede del pago tardar de 1 a 2 horas, luego de esto se le hará llegar una notificación con las Horas/Minutos en la que se realizara el proceso"
+VALIDATING_REFERENCE_PAYMENT_WAITING_VALIDATING_TEXT = "Validando referencia este proceso puede del pago tardar de 24 horas o menos dependiendo de las solicitudes en nuestro sistema, luego de esto se le hará llegar una notificación con el cronograma de ejecuciones de acuerdo a su plan, !!! Muchas Gracias !!!"
 
 SUCESS_USER_REGISTER_USERNAME = 113
 ENTER_USERNAME_TEXT = "Ingrese un nombre de usuario:"
@@ -143,15 +145,24 @@ SUCESS_USER_LOGOUT_SUCESS_TEXT = "✔️ Cierre de sesión realizado con éxito.
 WARNING_USER_TEXT_GENERAL_TEXT = "⛔️ No se logro registrar el usuario, por favor intente de nuevo en unos minutos."
 WARNING_USER_LOGIN_TEXT_GENERAL_TEXT = "⛔️ No se logro iniciar con su usuario, por favor intente de nuevo en unos minutos."
 WARNING_USER_LOGOUT_SUCESS_TEXT = "Por favor ingrese su nombre de usuario y contraseña."
+WARNING_USER_REFERENCE_PAYMENT_FAIL_TEXT = "⛔️ No se logró guardar su referencia de pago, por favor intente de nuevo."
+WARNING_USER_PAYMENT_FAIL_TEXT = "⛔️ No se logró guardar su metodo de pago, por favor intente de nuevo."
+
 
 WARNING_USER_INTENTS_TEXT = "😔 Hubo un problema realizando su registro, intentando nuevamente por {} vez, si el problema persiste espere unos minutos e intente nuevamente."
 
 WARNING_USER_NOT_LOGIN_TEXT = "No dispone de cuenta iniciada por favor valla a /login."
 
+HIDDEN_MENU_TEXT = "👓 Ocultando menu."
+SHOW_MENU_NOT_PAYMENT_TEXT = "👀 Agregando menu para usuario sin pago confirmado."
+
 WARNING_USER_TEXT = "🤔 No conozco ese comando, consulte /help para obtener ayuda"
 WARNING_FIELD_EMPTY_OR_INVALID_TEXT = "🔎 Campo {} inválido o faltante se solicitara nuevamente para corregir los datos"
 
-USER_PLANS_SELECTMENU_TEXT = "Plan seleccionado con éxito."
+USER_PLANS_SELECTMENU_TEXT = "✔️ Plan seleccionado con éxito."
+USER_METHOD_PAYMENT_SELECTMENU_TEXT = "✔️ {} Como metodo de pago seleccionado con éxito."
+USER_REFERENCE_PAYMENT_SELECTMENU_TEXT = "✔️ Referencia de pago guardada con éxito."
+USER_REFERENCE_PAYMENT_NOT_SAVE_TEXT = "⛔️ No se logro guardar su referencia por favor intente de nuevo."
 
 WARNING_MESSAGE_VERIFIED_TEXT = "Muchas gracias {}, apenas su pago sea verificado se le estara notificando"
 
@@ -174,6 +185,6 @@ WARNING_API_USER_DOES_NOT_EXIST = 'USER_DOES_NOT_EXIST'
 WARNING_API_WRONG_PASSWORD = 'WRONG_PASSWORD'
 BLOCKED_USER = 'BLOCKED_USER'
 
-WARNING_ERROR_GENERAL = 'Hubo un problema con su sulicitud Por favor intente de nuevo hubo un error al procesar su solicitud.'
+WARNING_ERROR_GENERAL = 'Hubo un problema con su sulicitud Por favor intente de nuevo.'
 
 RESPONSE_API_CORE = 'Respuesta de api:{msg}.'

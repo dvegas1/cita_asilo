@@ -279,6 +279,8 @@ class citaAsilobot:
                     isErrorLogin = await self.loginAsiloBot(update, chat_id)
                     if(isErrorLogin):
                         await self.sendMessageTelChatId(chat_id, update, constants.WARNING_USER_LOGIN_TEXT_GENERAL_TEXT, -1)
+                        self.data.get(chat_id).update({constants.HIDDEN_MENU:True})
+                        await self.persistentBtns(update, True, chat_id)
 
         except TimedOut as timedOutError:
             error = True
@@ -300,6 +302,17 @@ class citaAsilobot:
             await self.sendMessageTelChatId(chat_id, update, constants.WARNING_ERROR_GENERAL, -1)
 
         self.logger.info(constants.END, extra=self.extra_params)
+
+
+    async def getPerfil(self, update, chat_id):
+        self.logger.info(constants.START + ":" + inspect.stack()
+                         [1][3], extra=self.extra_params)
+                         
+        _error = False
+        #terminar metodo
+        self.logger.info(constants.END, extra=self.extra_params)
+        return _error
+
 
     async def setIdChat(self, update, chat_id):
         update_jsonStr = json.dumps(update.to_dict())
@@ -333,9 +346,11 @@ class citaAsilobot:
         if(self.dat[constants.USERNAME] == "" or self.dat[constants.PASSWORD] == ""):
             await self.validateLoginUser(update, chat_id)
         else:
-            isErrorLogin = await self.loginAsiloBot(update, False, chat_id)
+            isErrorLogin = await self.loginAsiloBot(update, chat_id)
             if(isErrorLogin):
                 await self.sendMessageTelChatId(chat_id, update, constants.WARNING_USER_LOGIN_TEXT_GENERAL_TEXT, -1)
+                self.data.get(chat_id).update({constants.HIDDEN_MENU:True})
+                await self.persistentBtns(update, True, chat_id)
 
         self.logger.info(constants.END, extra=self.extra_params)
 
@@ -444,6 +459,8 @@ class citaAsilobot:
             return False
 
     async def sendMessageTelChatId(self, chat_id, update, optionValidat_Text="", optionValidate=-1, add_clearList=True):
+        self.logger.info(constants.START + ":" + inspect.stack()
+                         [1][3], extra=self.extra_params)
         sucess = True
         error_str = ""
         # await self.plansMenu(chat_id)
@@ -695,6 +712,8 @@ class citaAsilobot:
 
         if(timetOut):
             await self.sendMessageTelChatId(chat_id, update, constants.WARNING_USER_LOGIN_TEXT_GENERAL_TEXT, -1)
+            self.data.get(chat_id).update({constants.HIDDEN_MENU:True})
+            await self.persistentBtns(update, True, chat_id)
         else:
             await self.sendMessageTelChatId(chat_id, update, constants.WARNING_USER_INTENTS_TEXT.replace("{}", ""), -1)
  
@@ -1134,9 +1153,10 @@ class citaAsilobot:
             time.sleep(3)
             self.plansMenu(update, chat_id)
 
-    async def confirm_payment_method(self, update,chat_id):
+    async def payment_method(self, update,chat_id):
         self.logger.info(constants.START + ":" + inspect.stack()
                          [1][3], extra=self.extra_params)
+        error = False
         try:
             dat = self.arraysCites.payment_method
 
@@ -1154,10 +1174,8 @@ class citaAsilobot:
             self.logger.error(errors, extra=self.extra_params)
 
         if error:
-            dat = self.arraysCites.payment_method
-
-            await self.sendesplegableButton(update,
-                dat, 12, constants.SUCESS_CONFIRM_PAYMENT_METHOD, 3, 10, chat_id=chat_id)
+            self.logger.warn(constants.WARNING_USER_AYMENT_FAIL_TEXT,extra=self.extra_params)
+            await self.sendMessageTelChatId(chat_id, update, constants.WARNING_USER_PAYMENT_FAIL_TEXT, -1)
 
     async def confirm_payment(self, update, chat_id):
         self.logger.info(constants.START + ":" + inspect.stack()
@@ -1222,7 +1240,7 @@ class citaAsilobot:
                 error = True
 
             if(error):
-                await self.paymentReference()
+                await self.sendMessageTelChatId(chat_id,update,constants.USER_REFERENCE_PAYMENT_NOT_SAVE_TEXT)
 
         self.logger.info(constants.END, extra=self.extra_params)
 
@@ -1388,6 +1406,7 @@ class citaAsilobot:
 
         await self.setUserTelegram(update, chat_id)
 
+        self.data.get(chat_id).update({constants.HIDDEN_MENU:True})
         await self.persistentBtns(update, True, chat_id)
 
         chatMsgUser = self.data.get(chat_id).get(constants.DATA_TOKEN_USER)
@@ -1780,23 +1799,24 @@ class citaAsilobot:
         elif json_object["action"] == constants.SUCESS_CONFIRM_PAYMENT_METHOD:
             error = False
             try:
-
-                await self.clearMsgText(True, update, chat_id)
-                _text = self.arraysCites.payment_method[json_object["index"]]
                 _index = json_object["index"]
+                _text = self.arraysCites.payment_method[_index]
+                
 
                 if _text != "":
                     self.dat["TypePayment"] = _index
-                    await self.validateFieldTextUser(update, chat_id)
-                    return
+                    await self.sendMessageTelChatId(chat_id, update, constants.USER_METHOD_PAYMENT_SELECTMENU_TEXT.replace("{}",_text))
+                    self.data.get(chat_id).update({constants.HIDDEN_MENU:True})
+                    await self.persistentBtns(update, True, chat_id)
+                    return True
             except Exception as errors:
                 error = True
                 self.logger.error(errors, extra=self.extra_params)
+                self.logger.error(constants.WARNING_USER_PAYMENT_FAIL_TEXT, extra=self.extra_params)
+                
 
             if error:
-
-                await self.clearMsgText(True, update, chat_id)
-                await self.validateFieldTextUser(update, chat_id)
+                await self.sendMessageTelChatId(chat_id, update, constants.WARNING_USER_PAYMENT_FAIL_TEXT)
 
         elif json_object["action"] == constants.SUCESS_CONFIRM_PAYMENT:
             error = False
@@ -1817,17 +1837,14 @@ class citaAsilobot:
                 if _text != "":
                     self.dat["payment"] = _value
                     self.optionValidate = 3
-
-                await self.validateFieldTextUser(update, chat_id)
-
             except Exception as errors:
                 error = True
                 self.logger.error(errors, extra=self.extra_params)
 
             if error:
-
-                await self.clearMsgText(True, update, chat_id)
-                await self.validateFieldTextUser(update, chat_id)
+                await self.sendMessageTelChatId(chat_id, update, constants.WARNING_USER_REFERENCE_PAYMENT_FAIL_TEXT,False)
+                self.data.get(chat_id).update({constants.HIDDEN_MENU:True})
+                await self.persistentBtns(update, True, chat_id)
 
         elif json_object["action"] == constants.SUCESS_REFERENCE_PAYMENT:
             error = False
@@ -1836,19 +1853,16 @@ class citaAsilobot:
                 await self.clearMsgText(True, update, chat_id)
                 _text = self.arraysCites.confirm[json_object["index"]]
                 if _text == constants.YES:
-                    await self.clearMsgText(True, update, chat_id)
                     self.dat[constants.REFERENCE_PAYMENT] = self.optionValidat_Text
-                    await self.validateFieldTextUser(update, chat_id)
-
-                else:
-                    await self.validateFieldTextUser(update, chat_id)
+                    await self.sendMessageTelChatId(chat_id, update, constants.USER_REFERENCE_PAYMENT_SELECTMENU_TEXT,False)
+                    self.data.get(chat_id).update({constants.HIDDEN_MENU:True})
+                    await self.persistentBtns(update, True, chat_id)
 
             except Exception as errors:
                 error = True
                 self.logger.error(errors, extra=self.extra_params)
 
             if error:
-
                 await self.clearMsgText(True, update, chat_id)
                 await self.validateFieldTextUser(update, chat_id)
 
@@ -2025,11 +2039,11 @@ class citaAsilobot:
         msgsMenuShowAndHide = self.data.get(chat_id).get(
             constants.DATA_MSGS_MENU_SHOW_AN_DHIDE, [])
 
-        self.logger.info("msgsMenuShowAndHide:%s",
+        self.logger.info("📘 msgsMenuShowAndHide:%s",
                          msgsMenuShowAndHide, extra=self.extra_params)
-        self.logger.info("hidden_menu:%s", hidden_menu,
+        self.logger.info("📘 hidden_menu:%s", hidden_menu,
                          extra=self.extra_params)
-        self.logger.info("Total items en menuDat:%s", len(menuDat), extra=self.extra_params)
+        self.logger.info("📘 Total items en menuDat:%s", len(menuDat), extra=self.extra_params)
 
         if(msgsMenuShowAndHide is None or hidden_menu is None or menuDat is None):
             self.logger.error("Error not key in %s", self.data.get(chat_id),extra=self.extra_params)
@@ -2051,6 +2065,8 @@ class citaAsilobot:
                 constants.PLANS_TEX, callback_data='/plans')
             setReference = InlineKeyboardButton(
                 constants.SET_MENU_REFERENCE_PAYMENT, callback_data='/setReference')
+            setMethoPayment = InlineKeyboardButton(
+                constants.SET_MENU_METHOD_PAYMENT, callback_data='/setMethoPayment')
             history = InlineKeyboardButton(
                 'Historial', callback_data='/history')
             logout = InlineKeyboardButton(
@@ -2059,11 +2075,13 @@ class citaAsilobot:
                 constants.HIDDEN, callback_data='/hidden')
             show = InlineKeyboardButton(
                 constants.SHOW, callback_data='/hidden')
+            information = InlineKeyboardButton(
+                constants.SHOW, callback_data='/information')
 
             self.data.get(chat_id).update(
                 {constants.DATA_MSGS_MENU_SHOW_AN_DHIDE: []})
 
-            if(len(menuDat) > 0):
+            if(len(menuDat) > 10000):
 
                 menu = menuDat[0]
 
@@ -2081,18 +2099,18 @@ class citaAsilobot:
                 menuDat = []
 
             if(not hidden_menu):
+                self.logger.info(constants.HIDDEN_MENU_TEXT,extra=self.extra_params)
+                arrBtnsPersistent = []
                 arrBtnsPersistent.append([show])
                 reply_markup = ReplyKeyboardMarkup(
-                    arrBtnsPersistent, resize_keyboard=True, one_time_keyboard=False)
+                arrBtnsPersistent, resize_keyboard=True, one_time_keyboard=False)
+                menu = await self.bot.send_message(chat_id=chat_id, text="...", reply_markup=reply_markup)
+                self.logger.info(menu, extra=self.extra_params)
 
-                if(len(menuDat) == 0):
-                    menu = await self.bot.send_message(chat_id=chat_id, text="...", reply_markup=reply_markup)
-                    self.logger.info(menu, extra=self.extra_params)
-
-                    self.data.get(chat_id).update(
+                self.data.get(chat_id).update(
                         {constants.MENU_DAT: [menu, update]})
 
-                    self.logger.info("💬 Agregando menu en chat:%s",
+                self.logger.info("💬 Agregando menu en chat:%s",
                                      menu.chat.id, extra=self.extra_params)
 
                     
@@ -2102,25 +2120,25 @@ class citaAsilobot:
                 if(self.loginAsiloBot != "" and self.tokenAsiloBot != ""):
                     if(not self.dat[constants.PAYMENT] and not self.dat[constants.SUCESS]):
                         if(self.dat[constants.PLANS] == -1 or self.dat[constants.REFERENCE_PAYMENT] == ""):
+                            self.logger.info(constants.SHOW_MENU_NOT_PAYMENT_TEXT,extra=self.extra_params)
                             arrBtnsPersistent.append(
-                                [plans, setReference, logout])
+                                [plans,setMethoPayment, setReference,information, logout])
+                            
+                        else:
+                            if(self.dat[constants.PLANS] != -1 and self.dat[constants.REFERENCE_PAYMENT] != "" and not self.dat[constants.SUCESS]):
+                                self.logger.info(constants.SHOW_MENU_NOT_PAYMENT_TEXT,extra=self.extra_params)
+                                await self.sendMessageTelChatId(chat_id, update, constants.VALIDATING_REFERENCE_PAYMENT_WAITING_VALIDATING_TEXT, -1)
+                                arrBtnsPersistent.append([information,logout])
+                                
                 else:
-                    arrBtnsPersistent.append([signup, login])
-
-                if(len(arrBtnsPersistent) > 0):
-                    arrBtnsPersistent.append([hidde])
-                    reply_markup = ReplyKeyboardMarkup(
-                        arrBtnsPersistent, resize_keyboard=True, one_time_keyboard=False)
-                else:
-                    reply_markup = ReplyKeyboardRemove()
+                    arrBtnsPersistent.append([signup, login,hidde])
+                
+                reply_markup = ReplyKeyboardMarkup(arrBtnsPersistent, resize_keyboard=True, one_time_keyboard=False)
+                   # reply_markup = ReplyKeyboardRemove()
 
                 receiber = await self.context.bot.send_message(chat_id=chat_id, text="...", reply_markup=reply_markup)
 
-                self.data[chat_id].update(
-                    {constants.MENU_DAT: [receiber, update]})
-
-                self.data.get(chat_id).get(constants.CHAT_MSG_USER, []).append(
-                    [chat_id, receiber.message_id])
+                self.data[chat_id].update({constants.MENU_DAT: [receiber, update]})
                 
                 
 
@@ -2146,7 +2164,6 @@ class citaAsilobot:
         if(error):
             time.sleep(3)
             await self.clearMsgText(True, update, chat_id)
-            await self.persistentBtns(update, updates, chat_id)
 
         self.logger.info(constants.END, extra=self.extra_params)
 
@@ -2209,9 +2226,14 @@ class citaAsilobot:
 
             if(text == constants.ENTRAR):
                 self.optionValidate = 8
+                self.dat[constants.USERNAME] = ""
+                self.dat[constants.PASSWORD] = ""
+
 
             if(text == constants.CERRAR_SESION):
                 self.optionValidate = 9
+                self.dat[constants.USERNAME] = ""
+                self.dat[constants.PASSWORD] = ""
 
             if(text == constants.HIDDEN.replace("\u00fa", "ú") or text == constants.SHOW.replace("\u00fa", "ú")):
 
@@ -2238,6 +2260,12 @@ class citaAsilobot:
 
             if(text == constants.SET_MENU_REFERENCE_PAYMENT):
                 self.optionValidate = 14
+
+            if(text == constants.SET_MENU_METHOD_PAYMENT):
+                self.optionValidate = 16
+
+            if(text == constants.INFORMATION):
+                self.optionValidate = 17   
 
             if validateFormText:
                 if self.optionValidate == 0:
@@ -2270,6 +2298,11 @@ class citaAsilobot:
                     await self.setReferenceMenu(update, chat_id)
                 elif self.optionValidate == 15:
                     await self.confirm_reference_Menu_payment(update, chat_id)
+                elif self.optionValidate == 16:
+                    await self.payment_method(update, chat_id)
+                elif self.optionValidate == 17:
+                    await self.payment_method(update, chat_id)
+
                 else:
                     msg = await self.sendMessageTelChatId(chat_id, update, constants.WARNING_USER_TEXT)
 
