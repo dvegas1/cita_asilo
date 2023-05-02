@@ -33,10 +33,15 @@ CERRAR_SESION = "Cerrar sesión"
 HIDDEN = "Ocultar Menú"
 SHOW = "Mostrar Menú"
 LOGOUT="logout"
-INFORMATION="information"
+INFORMATION="Mis Datos"
+SIGNUP="Registrarse"
 
 SET_MENU_REFERENCE_PAYMENT="Referencia de pago"
 SET_MENU_METHOD_PAYMENT="Metodo de pago"
+TOKEN_ASILO="tokenAsiloBot"
+EXTRA_PARAMS="extra_params"
+USERNAME_ASILO_BOT="usernameAsiloBot"
+USERNAME_TELEGRAM="usernameTelegram"
 
 
 DATA_CHAT_ID = 'chat_id'
@@ -47,6 +52,7 @@ MENU_DAT = 'menuDat'
 DATA_USERTELEGRAM = 'usernameTelegram'
 CHAT_MSG_USER = 'chatMsgUser'
 CHAT_MSG_USER_BTN = 'chatMsgUserBtn'
+CHAT_DATA_PERFIL = 'chat_data_perfil'
 
 
 
@@ -147,6 +153,20 @@ WARNING_USER_LOGIN_TEXT_GENERAL_TEXT = "⛔️ No se logro iniciar con su usuari
 WARNING_USER_LOGOUT_SUCESS_TEXT = "Por favor ingrese su nombre de usuario y contraseña."
 WARNING_USER_REFERENCE_PAYMENT_FAIL_TEXT = "⛔️ No se logró guardar su referencia de pago, por favor intente de nuevo."
 WARNING_USER_PAYMENT_FAIL_TEXT = "⛔️ No se logró guardar su metodo de pago, por favor intente de nuevo."
+WARNING_USER_LOGIN_FAIL_TEXT = "⛔️ No se logró iniciar sesion, por favor intente de nuevo."
+WARNING_GET_PERFIL_FAIL_TEXT = "⛔️ No se logro obtener los datos de su perfil, por favor intente de nuevo."
+
+WARNING_REFERENCE_FORMAT = "<b>La Referencia debe cumplir con los siguientes requisitos:</b>\n •<code><b>	Solo se permiten letras y números.</b></code>\n •<code><b> La longitud mínima es de 3 caracteres y la máxima de 40 caracteres.</b></code>"
+
+WARNING_BIRT_FORMAT = "<b>El Año de nacimiento debe cumplir con los siguientes requisitos:</b>\n •<code><b>	Solo se permiten números.</b></code>\n •<code><b> La longitud debe ser de 4 numeros.</b></code>"
+
+WARNING_DOC_FORMAT = "<b>El Numero de identificación debe cumplir con los siguientes requisitos:</b>\n •<code><b>	Solo se permiten letras y números.</b></code>\n •<code><b> La longitud mínima es de 6 caracteres y la máxima de 40 caracteres.</b></code>"
+
+WARNING_USERNAME_FORMAT = "<b>El Nombre de usuario debe cumplir con los siguientes requisitos:</b>\n •<code><b>	Solo se permiten letras, números y guiones bajos.</b></code>\n •<code><b> La longitud mínima es de 4 caracteres y la máxima de 20 caracteres.</b></code>\n •<code><b> No pueden comenzar ni terminar con guiones bajos.</b></code>\n"
+
+WARNING_NAME_FORMAT = "<b>El Nombre y Apellido debe cumplir con los siguientes requisitos:</b>\n •<code><b>	Solo se permiten letras.</b></code>\n •<code><b> La longitud mínima es de 7 caracteres y la máxima de 40 caracteres.</b></code>"
+
+
 
 
 WARNING_USER_INTENTS_TEXT = "😔 Hubo un problema realizando su registro, intentando nuevamente por {} vez, si el problema persiste espere unos minutos e intente nuevamente."
@@ -177,7 +197,7 @@ BLOCKED_USER_TEXT = "Límite de intentos excedidos, Por favor espere "+str(BLOCK
 
 SUCESS_USER_LOGIN_TEXT = '✔️ Inicio con su cuenta exitosamente.'
 
-WARNING_USER_ALREADY_LOGIN = '⚠️ Ya existe una cuenta iniciada con {username}, Cierre session con /logout y registre una nueva.'
+WARNING_USER_ALREADY_LOGIN = '⚠️ Ya existe una cuenta iniciada, Cierre session con /logout y registre una nueva.'
 
 #API
 WARNING_API_USERNAME_ALREADY_EXIST = 'USERNAME_ALREADY_EXISTS'
