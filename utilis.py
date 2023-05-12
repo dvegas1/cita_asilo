@@ -6,6 +6,8 @@ Created on Mon Feb 13 18:47:49 2023
 """
 import base64
 import re
+import datetime
+
 
 
 class utils():
@@ -52,9 +54,11 @@ class utils():
                 return False      
        
     async def validate_Birt(self,birt):
+        now = datetime.datetime.now()
+        current_year = now.year
         patron = r'^[0-9]{4}$'
         resultado = re.match(patron, birt)
-        if resultado:
+        if resultado and (int(birt) <= int(current_year)):
                 return True
         else:
                 return False
@@ -66,4 +70,12 @@ class utils():
                 return True
         else:
                 return False     
-        
+
+
+    async def validate_password(self,password):
+        patron = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$'
+        resultado = re.match(patron, password)
+        if resultado:
+                return True
+        else:
+                return False  

@@ -198,10 +198,17 @@ class testList:
         elif self.case == 14:
             _title_list = constants.CONFIRM_USERNAME_TEXT + self._add_title_text
         elif self.case == 15:
-            _title_list = constants.CONFIRM_PASSWORD_TEXT + self._add_title_text
+            _title_list = constants.CONFIRM_PASSWORD_TEXT
         elif self.case == 16:
            _title_list = constants.CONFIRM_CONFIRM_PAYMENT_TEXT
+        elif self.case == 17:
+           _title_list = constants.SELECT_INPUT_MODIFY_PERFIL_TEXT
+        elif self.case == 18:
+           _title_list = constants.ENTER_REFERENCE_PAYMENT_TEXT
+        elif self.case == 19:
+           _title_list = constants.FINISH_UPDATE_TEXT
         else:
+            self.logger.warn("El codigo:%s no se encuentra en la lista.",self.case,extra=self.extra_params)
             _title_list = "Seleccione:"
 
         #self.logger.info(self.update,extra=self.extra_params)

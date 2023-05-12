@@ -7,6 +7,8 @@ Created on Mon Feb 13 11:14:10 2023
 END="Fin."
 START="Inicio."
 YES="Si"
+
+
 USERNAME="username"
 PASSWORD="password"
 PROVINCIAGENERAL="provinciaGeneral"
@@ -18,7 +20,15 @@ DOC="doc"
 NAME="name"
 BIRTH="birth"
 COUNTRY="country"
+ACTION="action"
+TYPE_PAYMENT="TypePayment"
 
+
+
+LABEL_INPUTS={
+    "PROVINCIAGENERAL":"Provincia general",
+    "OFICINE":"Oficina"
+}
 
 #FORMULARY
 PAYMENT = "payment"
@@ -35,6 +45,7 @@ SHOW = "Mostrar Menú"
 LOGOUT="logout"
 INFORMATION="Mis Datos"
 SIGNUP="Registrarse"
+UPDATE_INFORMATION="Mi Perfil"
 
 SET_MENU_REFERENCE_PAYMENT="Referencia de pago"
 SET_MENU_METHOD_PAYMENT="Metodo de pago"
@@ -45,7 +56,6 @@ USERNAME_TELEGRAM="usernameTelegram"
 
 
 DATA_CHAT_ID = 'chat_id'
-DATA_TOKEN_USER = 'token_user'
 DATA_MSGS_MENU_SHOW_AN_DHIDE = 'msgsMenuShowAndHide'
 HIDDEN_MENU = 'hidden_menu'
 MENU_DAT = 'menuDat'
@@ -53,14 +63,17 @@ DATA_USERTELEGRAM = 'usernameTelegram'
 CHAT_MSG_USER = 'chatMsgUser'
 CHAT_MSG_USER_BTN = 'chatMsgUserBtn'
 CHAT_DATA_PERFIL = 'chat_data_perfil'
+ACTIONS_USER = 'actions_user_bot'
 
+
+MISSING = 'MISSING'
 
 
 ACTION_USER_BOT_SIGNUP = 0
 ACTION_USER_BOT_LOGIN = 1
 ACTION_USER_BOT_LOGOUT = 2
 ACTION_USER_BOT_HELP = 3
-ACTION_USER_BOT_HELP = 3
+ACTION_USER_BOT_UPDATE_PERFIL = 4
 
 ERROR_RUN_MAIN_SECONDS =5
 ERROR_RUN_MAIN_FAILE="No se logro iniciar cita_asilo, se intentara luego de: " + str(ERROR_RUN_MAIN_SECONDS) + " Segundos."
@@ -118,14 +131,14 @@ CONFIRM_REFERENCE_PAYMENT_TEXT = "Confirma Nro de referencia:"
 VALIDATING_REFERENCE_PAYMENT_WAITING_VALIDATING_TEXT = "Validando referencia este proceso puede del pago tardar de 24 horas o menos dependiendo de las solicitudes en nuestro sistema, luego de esto se le hará llegar una notificación con el cronograma de ejecuciones de acuerdo a su plan, !!! Muchas Gracias !!!"
 
 SUCESS_USER_REGISTER_USERNAME = 113
-ENTER_USERNAME_TEXT = "Ingrese un nombre de usuario:"
-CONFIRM_USERNAME_TEXT = "Confirme su nombre de usuario:"
+ENTER_USERNAME_TEXT = "Ingrese un Nombre de Usuario:"
+CONFIRM_USERNAME_TEXT = "Confirme su Nombre de Usuario:"
 
 
 
 SUCESS_USER_REGISTER_PASSWORD = 114
 ENTER_PASSWORD_TEXT = "Ingrese una contraseña:"
-CONFIRM_PASSWORD_TEXT = "Confirme su contraseña:"
+CONFIRM_PASSWORD_TEXT = "Confirme su Contraseña."
 
 SUCESS_CONFIRM_PAYMENT = 115
 CONFIRM_CONFIRM_PAYMENT_TEXT = "Confirme pago realizado"
@@ -145,20 +158,31 @@ SUCESS_CONFIRM_MENU_PLANS_TEXT = "Seleccione un Plan:"
 SUCESS_REFERENCE_MENU_PAYMENT = 119
 ENTER_REFERENCE_PAYMENT_TEXT = "Ingrese el Nro de referencia:"
 
+SELECT_INPUT_MODIFY_PERFIL = 120
+SELECT_INPUT_MODIFY_PERFIL_TEXT = "Mi perfil, para modificar seleccioné un dato de la lista:"
+UPDATE_PERFIL_MESSAGE_ID='UPDATE_PERFIL_MESSAGE_ID'
+
+
+FINISH_UPDATE = 121
+FINISH_UPDATE_TEXT = "..💭"
+
+
 USER_REGISTER_PROCESS_TEXT = "Se esta realizando el registro de su usuario 🔑."
 USER_REGISTER_SUCESS_TEXT = "✔️ Registro realizado con éxito."
 SUCESS_USER_LOGOUT_SUCESS_TEXT = "✔️ Cierre de sesión realizado con éxito."
 WARNING_USER_TEXT_GENERAL_TEXT = "⛔️ No se logro registrar el usuario, por favor intente de nuevo en unos minutos."
+WARNING_PERFIL_UPDATE_TEXT_GENERAL_TEXT = "⛔️ No se logro actualizar sus datos, por favor intente de nuevo en unos minutos."
 WARNING_USER_LOGIN_TEXT_GENERAL_TEXT = "⛔️ No se logro iniciar con su usuario, por favor intente de nuevo en unos minutos."
 WARNING_USER_LOGOUT_SUCESS_TEXT = "Por favor ingrese su nombre de usuario y contraseña."
 WARNING_USER_REFERENCE_PAYMENT_FAIL_TEXT = "⛔️ No se logró guardar su referencia de pago, por favor intente de nuevo."
 WARNING_USER_PAYMENT_FAIL_TEXT = "⛔️ No se logró guardar su metodo de pago, por favor intente de nuevo."
 WARNING_USER_LOGIN_FAIL_TEXT = "⛔️ No se logró iniciar sesion, por favor intente de nuevo."
 WARNING_GET_PERFIL_FAIL_TEXT = "⛔️ No se logro obtener los datos de su perfil, por favor intente de nuevo."
+WARNING_GET_PERFIL_NOT_DATA_TEXT = "⛔️ No se logro obtener los datos de su perfil, por favro intente de nuevo."
 
 WARNING_REFERENCE_FORMAT = "<b>La Referencia debe cumplir con los siguientes requisitos:</b>\n •<code><b>	Solo se permiten letras y números.</b></code>\n •<code><b> La longitud mínima es de 3 caracteres y la máxima de 40 caracteres.</b></code>"
 
-WARNING_BIRT_FORMAT = "<b>El Año de nacimiento debe cumplir con los siguientes requisitos:</b>\n •<code><b>	Solo se permiten números.</b></code>\n •<code><b> La longitud debe ser de 4 numeros.</b></code>"
+WARNING_BIRT_FORMAT = "<b>El Año de nacimiento debe cumplir con los siguientes requisitos:</b>\n •<code><b>	Solo se permiten números.</b></code>\n •<code><b> La longitud debe ser de 4 numeros.</b></code>\n •<code><b> La fecha no puede ser mayor que el año actual.</b></code>"
 
 WARNING_DOC_FORMAT = "<b>El Numero de identificación debe cumplir con los siguientes requisitos:</b>\n •<code><b>	Solo se permiten letras y números.</b></code>\n •<code><b> La longitud mínima es de 6 caracteres y la máxima de 40 caracteres.</b></code>"
 
@@ -166,10 +190,12 @@ WARNING_USERNAME_FORMAT = "<b>El Nombre de usuario debe cumplir con los siguient
 
 WARNING_NAME_FORMAT = "<b>El Nombre y Apellido debe cumplir con los siguientes requisitos:</b>\n •<code><b>	Solo se permiten letras.</b></code>\n •<code><b> La longitud mínima es de 7 caracteres y la máxima de 40 caracteres.</b></code>"
 
+WARNING_PASSWORD_FORMAT = "<b>La contraseña debe cumplir con los siguientes requisitos:</b>\n •<code><b> Debe contener al menos 8 caracteres de longitud.</b></code>\n •<code><b> Debe contener al menos una letra mayúscula y una letra minúscula.</b></code>\n •<code><b> Debe contener al menos un número y un carácter especial.</b></code>"
+
+TEXT_FORMAT = "<b>• {titulo}: {texto}</b>\n"
 
 
-
-WARNING_USER_INTENTS_TEXT = "😔 Hubo un problema realizando su registro, intentando nuevamente por {} vez, si el problema persiste espere unos minutos e intente nuevamente."
+WARNING_USER_INTENTS_TEXT = "😔 Hubo un problema realizando su registro, intentando nuevamente por {} vez, si el problema persiste espere unos minutos e intente nuevamente con el boton de la parte inferior o enviando el comando /signup"
 
 WARNING_USER_NOT_LOGIN_TEXT = "No dispone de cuenta iniciada por favor valla a /login."
 
@@ -180,7 +206,9 @@ WARNING_USER_TEXT = "🤔 No conozco ese comando, consulte /help para obtener ay
 WARNING_FIELD_EMPTY_OR_INVALID_TEXT = "🔎 Campo {} inválido o faltante se solicitara nuevamente para corregir los datos"
 
 USER_PLANS_SELECTMENU_TEXT = "✔️ Plan seleccionado con éxito."
-USER_METHOD_PAYMENT_SELECTMENU_TEXT = "✔️ {} Como metodo de pago seleccionado con éxito."
+USER_PLANS_FAIL_TEXT = "⛔️ No se logro guardar el plan seleccionado por favor intente de nuevo."
+
+USER_METHOD_PAYMENT_SELECTMENU_TEXT = "✔️ {} seleccionado como metodo de pago con éxito."
 USER_REFERENCE_PAYMENT_SELECTMENU_TEXT = "✔️ Referencia de pago guardada con éxito."
 USER_REFERENCE_PAYMENT_NOT_SAVE_TEXT = "⛔️ No se logro guardar su referencia por favor intente de nuevo."
 
@@ -196,6 +224,8 @@ BLOCKED_USER_MINUTES_BLOCK=5
 BLOCKED_USER_TEXT = "Límite de intentos excedidos, Por favor espere "+str(BLOCKED_USER_MINUTES_BLOCK)+" minutos e intente nuevamente."
 
 SUCESS_USER_LOGIN_TEXT = '✔️ Inicio con su cuenta exitosamente.'
+
+USER_PERFIL_UPTADATE_SUCESS_TEXT = "✔️ Datos actualizados con éxito."
 
 WARNING_USER_ALREADY_LOGIN = '⚠️ Ya existe una cuenta iniciada, Cierre session con /logout y registre una nueva.'
 

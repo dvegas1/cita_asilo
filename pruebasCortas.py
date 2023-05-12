@@ -232,5 +232,15 @@ _token = '1234asadsda567854554asdasdada65465465465465465465465456465464989asasda
 #print(_token[0:8])
 #print(_token[-8:len(_token)])
 
-token =  str(_token[0:8]) + str(_token[-8:len(_token)])
-print(token)
+# Crear una variable que contiene un entero
+valor = "             2                                  "
+
+
+# Verificar si el número es positivo
+#print(type(num))
+#if type(num) == int:
+
+
+print(valor == -1 or (type(valor) == str and str(valor).strip() == ""))
+
+

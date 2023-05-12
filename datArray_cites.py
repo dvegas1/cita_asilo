@@ -5,13 +5,17 @@ Created on Fri Feb 10 21:12:47 2023
 @author: PC
 """
 
+import constants
+
 class array_cites():
         
     plans= ["Gratis: 3 veces al día (8:00 am, 15:00 pm, 21:00 pm).","Cada 5 minutos: 25 usd/Semanal","Cada 10 minutos: 23 usd/Semanal","Cada 20 minutos: 18 usd/Semanal","Cada 1 hora: 15 usd/Mensual","Cada 4 hora: 14 usd/Mensual","Cada 8 hora: 12 usd/Mensual","Cada 12 hora: 10 usd/Mensual","Cada 24 hora: 8 usd/Mensual"]
     
-    price_plans=[0,20,15,10,8,5,3,1,0.5]
-    
+
+    finishUpdateProdifle= ["Realizado"]
+
     payment_method= ["Paypal","Btc","Usdt","Usdc","Zinli"]
+    price_plans=[0,20,15,10,8,5,3,1,0.5]
     
     actions= ["Solicitar Cita","Consultar Citas Confirmadas","Anular Cita"]    
     confirm= ["Si","No"]
@@ -302,7 +306,7 @@ class array_cites():
             'Oficina de Asilo y Refugio, C/ Pradillo, 40',
             'Silva, Silva, 19']
     
-    tramite_oficine_extrajera = ['Despliegue para ver trámites disponibles en esta provincia',
+    tramite_oficine_extrajera = [
                              'AUT. RES. TEMPORAL POR CIRCUNSTANCIAS EXCEPCIONALES POR RAZONES HUMANITARIAS, PROTECCIÓN INTERNACIONAL (art. 125) y DISP.',
                              'AUTORIZACIÓN DE RESIDENCIA TEMPORAL POR CIRCUNSTANCIAS EXCEPCIONALES POR ARRAIGO',
                              'AUTORIZACIÓN DE RESIDENCIA Y TRABAJO INICIAL POR CUENTA AJENA',
@@ -315,7 +319,7 @@ class array_cites():
                              'RECUPERACIÓN DE LA RESIDENCIA DE LARGA DURACIÓN',
                              'TARJETA INICIAL DE RESIDENCIA DE FAMILIAR DE CIUDADANO COMUNITARIO']
     
-    tramite_cuerpo_nacional_policial = ['Despliegue para ver trámites disponibles en esta provincia',
+    tramite_cuerpo_nacional_policial = [
                                     'ASILO - OFICINA DE ASILO Y  REFUGIO. Entrevista Telefónica Trabajador/a  Social. Calle Pradillo',
                                     'ASILO - PRIMERA CITA-provincia de Madrid',
                                     'ASILO-OFIC. DE ASILO Y REFUGIO.EXP/REN TIE Protección Internacional y Documentos Viaje.c/Pradillo 40',
@@ -337,7 +341,8 @@ class array_cites():
     
     
     tipo_doc=["N.I.E","D.N.I","PASAPORTE"]
-
+    
+    data_perfil= {"data":[{"text":"Provincia General: ","code":constants.SUCESS_PROVINCE,"lbl":constants.PROVINCIAGENERAL,"default":-1,"array":provinces},{"text":"Oficina: ","code":constants.SUCESS_OFICINE,"lbl":constants.SEDE,"default":-1,"array":oficines},{"text":"Oficina extranjera: ","code":constants.SUCESS_OFICINE_EXTRANJERA,"lbl":constants.TRAMITE_OFICINA,"default":-1,"array":tramite_oficine_extrajera},{"text":" Oficina para Tramite Cuerpo Policial: ","code":constants.SUCESS_TRAMITE_CUERPO_POLICIAL,"lbl":constants.TRAMITE_CUERPO_POLICIAL,"default":-1,"array":tramite_cuerpo_nacional_policial},{"text":"Tipo de documento: ","code":constants.SUCESS_TIPO_DOC,"lbl":constants.TYPEDOC,"default":-1,"array":tipo_doc},{"text":"Documento de Identidad: ","code":constants.SUCESS_CONFIRM_DOCUMENT,"lbl":constants.DOC,"default":'',"array":[]},{"text":"Nombre y Apellido: ","code":constants.SUCESS_CONFIRM_NAME,"lbl":constants.NAME,"default":'',"array":[]},{"text":"Año de Nacimiento: ","code":constants.SUCESS_CONFIRM_BIRTH,"lbl":constants.BIRTH,"default":'',"array":[]},{"text":"Pais: ","code":constants.SUCESS_COUNTRY,"lbl":constants.COUNTRY,"default":-1,"array":countrys},{"text":"Plan: ","code":constants.SUCESS_CONFIRM_PLANS,"lbl":constants.PLANS,"default":-1,"array":plans,"caseTitle":11},{"text":"Tipo de pago: ","code":constants.SUCESS_CONFIRM_PAYMENT_METHOD,"lbl":constants.TYPE_PAYMENT,"default":-1,"array":payment_method,"caseTitle":12},{"text":"Regencia de pago: ","code":constants.SUCESS_REFERENCE_PAYMENT,"lbl":constants.REFERENCE_PAYMENT,"default":'',"array":[],"caseTitle":18}]}
 
     def getCountrys(self):
             return self.countrys
@@ -354,4 +359,5 @@ class array_cites():
     def getTramite_cuerpo_nacional_policial(self):
             return self.tramite_cuerpo_nacional_policial    
 
+    
 
