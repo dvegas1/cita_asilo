@@ -4,8 +4,8 @@ Created on Mon Feb 13 11:14:10 2023
 
 @author: PC
 """
-END="Fin."
-START="Inicio."
+END="🔚 FIN."
+START="🏠 INICIO."
 YES="Si"
 
 
@@ -18,12 +18,14 @@ TRAMITE_CUERPO_POLICIAL="tramite_cuperto_policial"
 TYPEDOC="typeDoc"
 DOC="doc"
 NAME="name"
+EMAIL="email"
 BIRTH="birth"
 COUNTRY="country"
 ACTION="action"
 TYPE_PAYMENT="TypePayment"
 
-
+OPTIONVALIDATE="optionValidate"
+OPTIONVALIDAT_TEXT="optionValidat_Text"
 
 LABEL_INPUTS={
     "PROVINCIAGENERAL":"Provincia general",
@@ -161,10 +163,14 @@ ENTER_REFERENCE_PAYMENT_TEXT = "Ingrese el Nro de referencia:"
 SELECT_INPUT_MODIFY_PERFIL = 120
 SELECT_INPUT_MODIFY_PERFIL_TEXT = "Mi perfil, para modificar seleccioné un dato de la lista:"
 UPDATE_PERFIL_MESSAGE_ID='UPDATE_PERFIL_MESSAGE_ID'
-
+READY_UPDATE_PERFIL_MESSAGE_ID='READY_UPDATE_PERFIL_MESSAGE_ID'
 
 FINISH_UPDATE = 121
 FINISH_UPDATE_TEXT = "..💭"
+
+SUCESS_CONFIRM_EMAIL = 122
+ENTER_CONFIRM_EMAIL_TEXT = "Ingrese su correo electrónico:"
+CONFIRM_CONFIRM_EMAIL_TEXT = "Confirme su Correo electrónico: "
 
 
 USER_REGISTER_PROCESS_TEXT = "Se esta realizando el registro de su usuario 🔑."
@@ -192,6 +198,8 @@ WARNING_NAME_FORMAT = "<b>El Nombre y Apellido debe cumplir con los siguientes r
 
 WARNING_PASSWORD_FORMAT = "<b>La contraseña debe cumplir con los siguientes requisitos:</b>\n •<code><b> Debe contener al menos 8 caracteres de longitud.</b></code>\n •<code><b> Debe contener al menos una letra mayúscula y una letra minúscula.</b></code>\n •<code><b> Debe contener al menos un número y un carácter especial.</b></code>"
 
+WARNING_MAIL_FORMAT = "<b>El correo electrónico debe cumplir con el siguiente formato:</b>\n •<code><b>      Nombre.</b></code>\n •<code><b>Debe contener @ antes del dominio.</b></code>\n •<code><b>Dominio</b></code>\n •<code><b> Extension .com, .net .org ect..\n •<code><b>Ejemplo: nombre@dominio.com</b></code></b></code>"
+
 TEXT_FORMAT = "<b>• {titulo}: {texto}</b>\n"
 
 
@@ -210,6 +218,8 @@ USER_PLANS_FAIL_TEXT = "⛔️ No se logro guardar el plan seleccionado por favo
 
 USER_METHOD_PAYMENT_SELECTMENU_TEXT = "✔️ {} seleccionado como metodo de pago con éxito."
 USER_REFERENCE_PAYMENT_SELECTMENU_TEXT = "✔️ Referencia de pago guardada con éxito."
+USER_REFERENCE_PAYMENT_CANCELL = "✔️ No se actualizó su Nro. De referencia."
+
 USER_REFERENCE_PAYMENT_NOT_SAVE_TEXT = "⛔️ No se logro guardar su referencia por favor intente de nuevo."
 
 WARNING_MESSAGE_VERIFIED_TEXT = "Muchas gracias {}, apenas su pago sea verificado se le estara notificando"

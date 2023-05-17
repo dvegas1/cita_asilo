@@ -85,12 +85,6 @@ class testList:
     async def select(self,update, default=0, actions=0, page=-1):
         self.logger.info(constants.START + ":" + inspect.stack()[1][3], extra=self.extra_params)
 
-        if(self.chat_id is None):
-            self.logger.error("CHAT ID IS NONE, VALIDATE.",extra=self.extra_params)
-            return
-        else:
-            self.logger.info("Peticion con menu en el chat:%s",self.chat_id,extra=self.extra_params)
-
         if page != -1:
             self.page = page
 
@@ -207,6 +201,8 @@ class testList:
            _title_list = constants.ENTER_REFERENCE_PAYMENT_TEXT
         elif self.case == 19:
            _title_list = constants.FINISH_UPDATE_TEXT
+        elif self.case == 20:
+           _title_list = constants.CONFIRM_CONFIRM_EMAIL_TEXT + self._add_title_text
         else:
             self.logger.warn("El codigo:%s no se encuentra en la lista.",self.case,extra=self.extra_params)
             _title_list = "Seleccione:"
@@ -215,10 +211,8 @@ class testList:
         #await update.message.reply_text(
         #        _title_list, reply_markup=marku_countrys, parse_mode="MarkdownV2"
         #    )
-        self.logger.info("Chat id:%s",self.chat_id,extra=self.extra_params)
         _msgMarkup = await self.bot.send_message(chat_id=self.chat_id, text=_title_list,reply_markup=marku_countrys )
         
-    
-        self.logger.info("Fin.", extra=self.extra_params)
+        self.logger.info(constants.END, extra=self.extra_params)
 
         return _msgMarkup

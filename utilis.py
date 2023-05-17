@@ -79,3 +79,12 @@ class utils():
                 return True
         else:
                 return False  
+        
+        
+    async def validate_email(self,password):
+        patron = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        resultado = re.match(patron, password)
+        if resultado:
+                return True
+        else:
+                return False  
