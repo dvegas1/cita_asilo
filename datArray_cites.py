@@ -13,6 +13,7 @@ class array_cites():
     
 
     finishUpdateProdifle= ["Realizado"]
+    cancelProcess= ["Cancelar"]
 
     payment_method= ["Paypal","Btc","Usdt","Usdc","Zinli"]
     price_plans=[0,20,15,10,8,5,3,1,0.5]

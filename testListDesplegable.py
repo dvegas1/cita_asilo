@@ -19,7 +19,7 @@ class testList:
     application = ""
     token = "5940401924:AAHUZEP6BtTOWPk2Zvy5uQOatI8b8JySVu8"
     _message_id = []
-    context, application, dats, dat = range(4)
+    application, dats, dat = range(3)
     update = ""
     page = 0
     pageLast = 0
@@ -45,7 +45,6 @@ class testList:
         self,
         token,
         update,
-        context,
         dat,
         case,
         sucess_code,
@@ -58,7 +57,6 @@ class testList:
     ):
         self.token = token
         self.update = update
-        self.context = context
         self.dat = dat
         self.case = case
         self.sucess_code = sucess_code
@@ -203,6 +201,8 @@ class testList:
            _title_list = constants.FINISH_UPDATE_TEXT
         elif self.case == 20:
            _title_list = constants.CONFIRM_CONFIRM_EMAIL_TEXT + self._add_title_text
+        elif self.case == 21:
+           _title_list = constants.CANCEL_PROCESS
         else:
             self.logger.warn("El codigo:%s no se encuentra en la lista.",self.case,extra=self.extra_params)
             _title_list = "Seleccione:"

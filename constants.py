@@ -48,6 +48,7 @@ LOGOUT="logout"
 INFORMATION="Mis Datos"
 SIGNUP="Registrarse"
 UPDATE_INFORMATION="Mi Perfil"
+CANCELAR="Cancelar"
 
 SET_MENU_REFERENCE_PAYMENT="Referencia de pago"
 SET_MENU_METHOD_PAYMENT="Metodo de pago"
@@ -69,6 +70,7 @@ ACTIONS_USER = 'actions_user_bot'
 
 
 MISSING = 'MISSING'
+NEWSELECT = 'newSelect'
 
 
 ACTION_USER_BOT_SIGNUP = 0
@@ -172,6 +174,8 @@ SUCESS_CONFIRM_EMAIL = 122
 ENTER_CONFIRM_EMAIL_TEXT = "Ingrese su correo electrónico:"
 CONFIRM_CONFIRM_EMAIL_TEXT = "Confirme su Correo electrónico: "
 
+SUCESS_CANCEL_PROCESS = 123
+CANCEL_PROCESS = "Cancelar proceso"
 
 USER_REGISTER_PROCESS_TEXT = "Se esta realizando el registro de su usuario 🔑."
 USER_REGISTER_SUCESS_TEXT = "✔️ Registro realizado con éxito."
@@ -205,7 +209,7 @@ TEXT_FORMAT = "<b>• {titulo}: {texto}</b>\n"
 
 WARNING_USER_INTENTS_TEXT = "😔 Hubo un problema realizando su registro, intentando nuevamente por {} vez, si el problema persiste espere unos minutos e intente nuevamente con el boton de la parte inferior o enviando el comando /signup"
 
-WARNING_USER_NOT_LOGIN_TEXT = "No dispone de cuenta iniciada por favor valla a /login."
+WARNING_USER_NOT_LOGIN_TEXT = "No dispone de cuenta iniciada por favor seleccione el boton Registrarse o envie el comando /signup ."
 
 HIDDEN_MENU_TEXT = "👓 Ocultando menu."
 SHOW_MENU_NOT_PAYMENT_TEXT = "👀 Agregando menu para usuario sin pago confirmado."
