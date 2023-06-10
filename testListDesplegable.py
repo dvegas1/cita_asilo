@@ -14,7 +14,7 @@ import json
 import constants
 import inspect
 import telegram
-
+from telegram.constants import ParseMode
 class testList:
     application = ""
     token = "5940401924:AAHUZEP6BtTOWPk2Zvy5uQOatI8b8JySVu8"
@@ -211,7 +211,7 @@ class testList:
         #await update.message.reply_text(
         #        _title_list, reply_markup=marku_countrys, parse_mode="MarkdownV2"
         #    )
-        _msgMarkup = await self.bot.send_message(chat_id=self.chat_id, text=_title_list,reply_markup=marku_countrys )
+        _msgMarkup = await self.bot.send_message(chat_id=self.chat_id, text=_title_list,reply_markup=marku_countrys, parse_mode=ParseMode.HTML )
         
         self.logger.info(constants.END, extra=self.extra_params)
 

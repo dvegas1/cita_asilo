@@ -64,6 +64,8 @@ class utils():
                 return False
         
     async def validate_username(self,username):
+        if(username == ""):
+                return False
         patron = r'^(?!_)(?!.*_{2})[a-zA-Z0-9_]{4,20}(?<!_)$'
         resultado = re.match(patron, username)
         if resultado:

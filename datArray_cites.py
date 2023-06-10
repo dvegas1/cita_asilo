@@ -321,7 +321,7 @@ class array_cites():
                              'TARJETA INICIAL DE RESIDENCIA DE FAMILIAR DE CIUDADANO COMUNITARIO']
     
     tramite_cuerpo_nacional_policial = [
-                                    'ASILO - OFICINA DE ASILO Y  REFUGIO. Entrevista Telefónica Trabajador/a  Social. Calle Pradillo',
+                                    'ASILO - OFICINA DE ASILO\n Y  REFUGIO. Entrevista Telefónica Trabajador/a  Social. Calle Pradillo',
                                     'ASILO - PRIMERA CITA-provincia de Madrid',
                                     'ASILO-OFIC. DE ASILO Y REFUGIO.EXP/REN TIE Protección Internacional y Documentos Viaje.c/Pradillo 40',
                                     'ASILO-OFICINA DE ASILO Y REFUGIO."nueva normalidad” Expedición/Renovación Documentos.C/ Pradillo 40',

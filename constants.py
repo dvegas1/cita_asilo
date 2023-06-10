@@ -8,6 +8,8 @@ END="🔚 FIN."
 START="🏠 INICIO."
 YES="Si"
 
+ISLOGIN="isLogin"
+
 
 USERNAME="username"
 PASSWORD="password"
@@ -48,7 +50,7 @@ LOGOUT="logout"
 INFORMATION="Mis Datos"
 SIGNUP="Registrarse"
 UPDATE_INFORMATION="Mi Perfil"
-CANCELAR="Cancelar"
+CANCELAR="Cancelar ❌"
 
 SET_MENU_REFERENCE_PAYMENT="Referencia de pago"
 SET_MENU_METHOD_PAYMENT="Metodo de pago"
@@ -72,12 +74,14 @@ ACTIONS_USER = 'actions_user_bot'
 MISSING = 'MISSING'
 NEWSELECT = 'newSelect'
 
-
+ACTION_USER_BOT_DEFAULT = -1
 ACTION_USER_BOT_SIGNUP = 0
 ACTION_USER_BOT_LOGIN = 1
 ACTION_USER_BOT_LOGOUT = 2
 ACTION_USER_BOT_HELP = 3
 ACTION_USER_BOT_UPDATE_PERFIL = 4
+
+STAR_SIGNUP_USER_MSG_TEXT = "Ha comenzado el proceso de registro, se le pediran los datos necesarios que solicita la pagina https://sede.administracionespublicas.gob.es/pagina/index/directorio/icpplus, Luego de que ingrese el dato solicitado si todo es correcto se le pedira el siguiente hasta culmitar el proceso."
 
 ERROR_RUN_MAIN_SECONDS =5
 ERROR_RUN_MAIN_FAILE="No se logro iniciar cita_asilo, se intentara luego de: " + str(ERROR_RUN_MAIN_SECONDS) + " Segundos."
@@ -202,7 +206,7 @@ WARNING_NAME_FORMAT = "<b>El Nombre y Apellido debe cumplir con los siguientes r
 
 WARNING_PASSWORD_FORMAT = "<b>La contraseña debe cumplir con los siguientes requisitos:</b>\n •<code><b> Debe contener al menos 8 caracteres de longitud.</b></code>\n •<code><b> Debe contener al menos una letra mayúscula y una letra minúscula.</b></code>\n •<code><b> Debe contener al menos un número y un carácter especial.</b></code>"
 
-WARNING_MAIL_FORMAT = "<b>El correo electrónico debe cumplir con el siguiente formato:</b>\n •<code><b>      Nombre.</b></code>\n •<code><b>Debe contener @ antes del dominio.</b></code>\n •<code><b>Dominio</b></code>\n •<code><b> Extension .com, .net .org ect..\n •<code><b>Ejemplo: nombre@dominio.com</b></code></b></code>"
+WARNING_MAIL_FORMAT = "<b>El correo electrónico debe cumplir con el siguiente formato:</b>\n •<code><b>Nombre.</b></code>\n •<code><b>Debe contener @ antes del dominio.</b></code>\n •<code><b>Dominio</b></code>\n •<code><b>Extension .com, .net .org ect..\n •<code><b>Ejemplo: nombre@dominio.com</b></code></b></code>"
 
 TEXT_FORMAT = "<b>• {titulo}: {texto}</b>\n"
 
@@ -250,5 +254,6 @@ WARNING_API_WRONG_PASSWORD = 'WRONG_PASSWORD'
 BLOCKED_USER = 'BLOCKED_USER'
 
 WARNING_ERROR_GENERAL = 'Hubo un problema con su sulicitud Por favor intente de nuevo.'
+WARNING_TIME_OUT = '😕 No se logró entregar el mensaje completamente, esto puede ser por varios rozones, conexión a internet, problemas en la red o tiempo de espera agotado, por favor intente nuevamente.'
 
 RESPONSE_API_CORE = 'Respuesta de api:{msg}.'
