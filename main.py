@@ -80,7 +80,7 @@ class citaAsilobot:
         self.timeout_seconds = 10
         self.text_Loading = "🔤🔤🔤🔤🔤🔤🔤🔤"
         self.cita_asilobot = None
-        self.datDefault = {
+        self.datDefault1 = {
             "provinciaGeneral": 1,
             "sede": 1,
             "tramite_oficina": 1,
@@ -93,16 +93,16 @@ class citaAsilobot:
             "plans": -1,
             "action": -1,
             "payment": False,
-            "typePayment": -1,
+            "methodPayment":-1,
             "reference_payment": "",
             "email": "dddd@dddd.com",
-            "sucess": False,
+            "sucess": 0,
             constants.USERNAME: "",
             constants.PASSWORD: "Mirna.2045+",
             constants.DATA_CHAT_ID: "-1",
         }
         
-        self.datDefault1 = {
+        self.datDefault = {
             "provinciaGeneral": -1,
             "sede": -1,
             "tramite_oficina": -1,
@@ -110,15 +110,15 @@ class citaAsilobot:
             "typeDoc": -1,
             "doc": "",
             "name": "",
-            "birth": -1,
+            "birth": '',
             "country": -1,
             "plans": -1,
             "action": -1,
             "payment": False,
-            "typePayment": -1,
+            "methodPayment":-1,
             "reference_payment": "",
             "email": "",
-            "sucess": False,
+            "sucess": 0,
             constants.USERNAME: "",
             constants.PASSWORD: "",
             constants.DATA_CHAT_ID: "-1",
@@ -171,14 +171,8 @@ class citaAsilobot:
     fileHandler.setLevel(level=logging.INFO)
 
     logger.addHandler(fileHandler)
-    
-    print("                 ")
-    print("                 ")
-    print("                 ")
-    print(" Inicio asiloBot ")
-    print("                 ")
-    print("                 ")
-    print("                 ")
+
+    print(" -*- Inicio asiloBot -*- ")
 
     async def LogoutUser(self, update: Update, context: ContextTypes.DEFAULT_TYPE, chat_id=-1) -> None:
         if(chat_id == -1):
@@ -446,14 +440,14 @@ class citaAsilobot:
             json.update(
                 {constants.ACTION: self.arraysCites.actions[data.get(constants.ACTION)]})
 
-        if(bool(data.get(constants.PAYMENT)) is not None and bool(data.get(constants.PAYMENT))):
+        if(data.get(constants.PAYMENT) is not None and data.get(constants.PAYMENT) == 1):
             json.update({constants.PAYMENT: "Pago realizado con exito"})
         else:
             json.update({constants.PAYMENT: "En espera de su pago"})
 
-        if(data.get(constants.TYPE_PAYMENT) is not None and data.get(constants.TYPE_PAYMENT) != -1):
-            json.update({constants.TYPE_PAYMENT: self.arraysCites.payment_method[data.get(
-                constants.TYPE_PAYMENT)]})
+        if(data.get(constants.METHOD_PAYMENT) is not None and data.get(constants.METHOD_PAYMENT) != -1):
+            json.update({constants.METHOD_PAYMENT: self.arraysCites.payment_method[data.get(
+                constants.METHOD_PAYMENT)]})
 
         if(data.get(constants.REFERENCE_PAYMENT) is not None and data.get(constants.REFERENCE_PAYMENT) != ""):
             json.update({constants.REFERENCE_PAYMENT: data.get(
@@ -573,6 +567,9 @@ class citaAsilobot:
             return
 
         if(self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL, self.datDefault.copy()).get(constants.USERNAME, '') == "" or self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL, self.datDefault.copy()).get(constants.PASSWORD, '') == ""):
+            self.data.get(chat_id).update(
+            {constants.ACTIONS_USER: constants.ACTION_USER_BOT_LOGIN})
+            await self.persistentBtns(update, True, chat_id)
             await self.validateLoginUser(update, chat_id)
         else:
             isErrorLogin = await self.loginAsiloBot(update, chat_id)
@@ -1138,8 +1135,10 @@ class citaAsilobot:
         self.logger.info(self.data, extra=self.data.get(
             chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
         
+        await self.persistentBtns(update, True, chat_id)
+        
         await self.validateFieldTextUser(update, chat_id)
-
+        
         self.logger.info(constants.END, extra=self.data.get(
             chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
 
@@ -2330,13 +2329,11 @@ class citaAsilobot:
 
                     if _text != "":
                         self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL, self.datDefault.copy()).update(
-                            {constants.TYPE_PAYMENT: _index})
+                            {constants.METHOD_PAYMENT: _index})
 
                         if(self.data.get(chat_id).get(constants.ACTIONS_USER, -1) == constants.ACTION_USER_BOT_UPDATE_PERFIL):
                             await self.updatePerfil(update, chat_id)
 
-                        self.data.get(chat_id).update(
-                            {constants.HIDDEN_MENU: True})
                         await self.persistentBtns(update, True, chat_id)
                 except Exception as errors:
                     error = True
@@ -2491,7 +2488,7 @@ class citaAsilobot:
                     # asyncio.create_task(my_async_function())
 
                     fieldOptional = [
-                        constants.PLANS, constants.TYPE_PAYMENT, constants.REFERENCE_PAYMENT]
+                        constants.PLANS, constants.METHOD_PAYMENT, constants.REFERENCE_PAYMENT]
 
                     if lbl in fieldOptional:
                         optionalDat = [lbl, code, array, default, caseTitle]
@@ -2778,17 +2775,17 @@ class citaAsilobot:
 
             else:
                 if(self.data.get(chat_id).get(constants.TOKEN_ASILO, "") != ""):
-                    if(not self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL, self.datDefault.copy()).get(constants.PAYMENT, False) and not self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL, self.datDefault.copy()).get(constants.SUCESS, False)):
+                    if(not self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL, self.datDefault.copy()).get(constants.PAYMENT, False) and not self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL, self.datDefault.copy()).get(constants.SUCESS, 0)):
                         
                         if(self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL, self.datDefault.copy()).get(constants.PLANS, -1) == -1 or self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL, self.datDefault.copy()).get(constants.REFERENCE_PAYMENT, "") == ""):
                             self.logger.info(
                                 constants.SHOW_MENU_NOT_PAYMENT_TEXT, extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
                             
                             arrBtnsPersistent.append(
-                                [update_information, logout, hidde])
+                                [update_information, logout])
 
                         else:
-                            if(self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL, self.datDefault.copy()).get(constants.PLANS, -1) != -1 and self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL, self.datDefault.copy()).get(constants.REFERENCE_PAYMENT, "") != "" and not self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL, self.datDefault.copy()).get(constants.SUCESS, False)):
+                            if(self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL, self.datDefault.copy()).get(constants.PLANS, -1) != -1 and self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL, self.datDefault.copy()).get(constants.REFERENCE_PAYMENT, "") != "" and not self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL, self.datDefault.copy()).get(constants.SUCESS, 0)):
                                 self.logger.info(
                                     constants.SHOW_MENU_NOT_PAYMENT_TEXT, extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
                                 await self.sendMessageTelChatId(chat_id, update, constants.VALIDATING_REFERENCE_PAYMENT_WAITING_VALIDATING_TEXT, -1)
@@ -2796,10 +2793,10 @@ class citaAsilobot:
                                     [update_information, logout])
 
                 else:
-                    if(self.data.get(chat_id).get(constants.ACTIONS_USER,-1)  == 0 ):
-                        arrBtnsPersistent.append([cancelProcess, login, hidde])  
+                    if(self.data.get(chat_id).get(constants.ACTIONS_USER,-1)  == 0 or self.data.get(chat_id).get(constants.ACTIONS_USER,-1)  == 1 ):
+                        arrBtnsPersistent = [[cancelProcess]] 
                     else:
-                        arrBtnsPersistent.append([signup, login, hidde])
+                        arrBtnsPersistent.append([signup, login])
 
                 
                 self.logger.info("💬 Agregando menu en chat..", extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))

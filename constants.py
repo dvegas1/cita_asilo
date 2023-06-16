@@ -24,7 +24,7 @@ EMAIL="email"
 BIRTH="birth"
 COUNTRY="country"
 ACTION="action"
-TYPE_PAYMENT="TypePayment"
+METHOD_PAYMENT="methodPayment"
 
 OPTIONVALIDATE="optionValidate"
 OPTIONVALIDAT_TEXT="optionValidat_Text"
