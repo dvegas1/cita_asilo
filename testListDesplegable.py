@@ -29,7 +29,7 @@ class testList:
     _paginatorActive = False
     case = "S/C"
     sucess_code = ""
-    _paginatorLisColumm = 3
+    _paginatorLisColumm = 1
     _paginatorGeneral = 20
     _reply_text = []
     _add_title_text = ""

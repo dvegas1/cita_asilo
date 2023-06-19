@@ -179,21 +179,13 @@ class citaAsilobot:
             chat_id = update.message.chat_id
             self.logger.info(constants.START + ":" + inspect.stack()
                              [1][3], extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
-
+        
+        await self.setChatId(update,chat_id)
 
         if(self.data.get(chat_id).get(constants.TOKEN_ASILO, "") == ""):
             await self.sendMessageTelChatId(chat_id, update, constants.WARNING_USER_NOT_LOGIN_TEXT, -1)
         else:
             self.logger.info("Cerrando sesion de usuario",extra=self.extra_params.copy())
-            # self.data.get(chat_id).update({constants.ISLOGIN:False})
-            # self.data = {chat_id:{constants.CHAT_DATA_PERFIL}}
-            # self.data.get(chat_id).pop(constants.EXTRA_PARAMS,self.extra_params.copy())
-            # self.data.get(chat_id).pop(constants.MENU_DAT,None)
-            # self.data.get(chat_id).pop(constants.CHAT_MSG_USER,None)
-            # self.data.get(chat_id).pop(constants.TOKEN_ASILO,None)
-            # self.data.get(chat_id).pop(constants.DATA_MSGS_MENU_SHOW_AN_DHIDE,None)
-            # self.data.get(chat_id).pop(constants.ACTIONS_USER,None)
-            #self.datDefault = self.datDefault
             self.data = {chat_id:{constants.CHAT_DATA_PERFIL:self.datDefault.copy()}}
             citaAsilobot.data = {chat_id:{constants.CHAT_DATA_PERFIL:self.datDefault.copy()}}
             
@@ -210,7 +202,7 @@ class citaAsilobot:
                 chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
 
     async def loginAsiloBot(self, update, chat_id):
-
+        code_response = -1
         self.logger.info(constants.START + ":" + inspect.stack()
                          [1][3], extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
         _error = False
@@ -227,26 +219,33 @@ class citaAsilobot:
                     "POST", self.url + "/login", headers=headers, data=payload
                 )
                 _response = json.loads(response.text)
+                code_response = response.status_code
 
                 self.logger.info(constants.RESPONSE_API_CORE.replace(
                     "{msg}", response.text), extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
+                self.logger.info(constants.RESPONSE_API_CORE.replace(
+                    "{msg}", str(response.status_code)), extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
+                
+                if(code_response == -1):
+                    _error = True
+                    
             except Exception as error:
                 self.logger.error(str(error) + str(traceback.print_exc()), extra=self.data.get(chat_id).get(
                     constants.EXTRA_PARAMS, self.extra_params.copy()))
                 _error = True
-
+                
             if(not _error):
                 self.data.get(chat_id).update(
                     {constants.ACTIONS_USER: constants.ACTION_USER_BOT_LOGIN})
-                await self.registerUser_validate(update, _response, chat_id)
-
+                await self.registerUser_validate(update, response, chat_id)
+            else:
+                await self.sendMessageTelChatId(chat_id, update, constants.WARNING_USER_LOGIN_TEXT_GENERAL_TEXT,-1)
         else:
-            await self.sendMessageTelChatId(chat_id, update, constants.WARNING_USER_LOGOUT_SUCESS_TEXT)
+            await self.sendMessageTelChatId(chat_id, update, constants.WARNING_USER_LOGOUT_SUCESS_TEXT,-1,False)
             self.data.get(chat_id).update({constants.ISLOGIN:True})
             await self.validateLoginUser(update, False, chat_id)
 
-        self.logger.info("Error in login %s", _error,
-                         extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
+        
         self.logger.info(constants.END, extra=self.data.get(
             chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
         return _error
@@ -316,10 +315,10 @@ class citaAsilobot:
                 if(not error):
                     isErrorLogin = await self.loginAsiloBot(update, chat_id)
                     if(isErrorLogin):
-                        await self.sendMessageTelChatId(chat_id, update, constants.WARNING_USER_LOGIN_TEXT_GENERAL_TEXT, -1)
+                        await self.sendMessageTelChatId(chat_id, update, constants.WARNING_USER_LOGIN_TEXT_GENERAL_TEXT, -1,False)
                         self.data.get(chat_id).update(
                             {constants.HIDDEN_MENU: True})
-                        await self.persistentBtns(update, True, chat_id)
+                        await self.cancelProcess(update,chat_id)
 
         except TimedOut as timedOutError:
             error = True
@@ -545,6 +544,8 @@ class citaAsilobot:
             return _response
 
     async def LoginUser(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+        await self.valid_user_chat(update)
+        
         self.logger.info(constants.START + ":" + inspect.stack()
                          [1][3], extra=self.data.get(update.message.chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
         update = update
@@ -554,6 +555,7 @@ class citaAsilobot:
         if(chat_id == -1):
             chat_id = update.message.chat_id
 
+        await self.setChatId(update,chat_id)
         await self.setUserTelegram(update, chat_id)
         await self.setTokenUser(chat_id)
 
@@ -601,81 +603,77 @@ class citaAsilobot:
             # espera un minuto antes de volver a verificar
             time.sleep(60)
 
-    async def registerUser_validate(self, update, _json, chat_id):
+    async def registerUser_validate(self, update, response, chat_id):
         self.logger.info(constants.START + ":" + inspect.stack()
                          [1][3], extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
         sucess = True
         valid = True
+        
         try:
-            self.logger.info(self.data.get(chat_id).get(constants.ACTIONS_USER, -1), extra=self.data.get(
+            _json = json.loads(response.text)
+            code_response = response.status_code
+            
+            self.logger.info(str(code_response), extra=self.data.get(
                 chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
-            token = _json.get("token", "")
+            token = _json.get("token")
+            
+            if(code_response == constants.httpOk or code_response == constants.httpOkreply):
+                if(token is not None):
+                    self.data.get(chat_id).update({constants.TOKEN_ASILO: token})
 
-            if(token != ""):
+                    
+                    if(self.data.get(chat_id).get(constants.ACTIONS_USER, -1) == constants.ACTION_USER_BOT_LOGIN):
 
-                self.data.get(chat_id).update({constants.TOKEN_ASILO: token})
+                        await self.sendMessageTelChatId(chat_id, update, constants.SUCESS_USER_LOGIN_TEXT, -1, False)
+                        
+                        await self.setUserBot(update,chat_id)
+                        
+                        self.data.get(chat_id).update(
+                            {constants.HIDDEN_MENU: True})
+                        await self.persistentBtns(update, True, chat_id)
+                        await self.getPerfil(update, chat_id)
 
-                self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()).update(
-                    {constants.USERNAME_ASILO_BOT: _json.get("user").get(constants.USERNAME)})
+                    if(self.data.get(chat_id).get(constants.ACTIONS_USER, -1) == constants.ACTION_USER_BOT_SIGNUP):
+                                await self.sendMessageTelChatId(chat_id, update, constants.USER_REGISTER_SUCESS_TEXT, -1,False)
+                                self.data.get(chat_id).update({constants.CHAT_DATA_PERFIL:self.datDefault.copy()})
+                                await self.clearMsgText(True,update,chat_id=chat_id)
+                                self.logger.info(
+                                    constants.USER_REGISTER_SUCESS_TEXT, extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
+                                await self.persistentBtns(update, update, chat_id=chat_id)
+            if(code_response == 422):
+                    msg_api = _json.get("message","")
+                    if(msg_api == constants.WARNING_API_WRONG_PASSWORD):
+                                await self.sendMessageTelChatId(chat_id, update, constants.WARNING_API_WRONG_PASSWORD_TEXT, -1,False)
+                                await self.cancelProcess(update, chat_id)
 
-                if(self.data.get(chat_id).get(constants.ACTIONS_USER, -1) == constants.ACTION_USER_BOT_LOGIN):
-
-                    await self.sendMessageTelChatId(chat_id, update, constants.SUCESS_USER_LOGIN_TEXT, -1, False)
-
-                    self.data.get(chat_id).update(
-                        {constants.HIDDEN_MENU: True})
-                    await self.persistentBtns(update, True, chat_id)
-                    await self.getPerfil(update, chat_id)
-
-                if(self.data.get(chat_id).get(constants.ACTIONS_USER, -1) == constants.ACTION_USER_BOT_SIGNUP):
-                    await self.sendMessageTelChatId(chat_id, update, constants.USER_REGISTER_SUCESS_TEXT, -1,False)
-                    self.data.get(chat_id).update({constants.CHAT_DATA_PERFIL:self.datDefault.copy()})
-                    await self.clearMsgText(True,update,chat_id=chat_id)
-                    self.logger.info(
-                        constants.USER_REGISTER_SUCESS_TEXT, extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
-                    await self.persistentBtns(update, update, chat_id=chat_id)
-            else:
-                error_msg = _json.get("errors", {"msg": []}).get("msg")
-                if(len(error_msg) > 0):
-                    if(type(error_msg) == "list"):
-                        for error in error_msg:
-                            if(error.get("msg") == constants.MISSING):
-                                await self.sendMessageTelChatId(chat_id, update, constants.WARNING_USER_INTENTS_TEXT, -1)
+                    if msg_api == constants.BLOCKED_USER:
+                                self.isErrorFormulary = True
+                                self.timBlockUser()
+                                self.blockUser = True
+                                await self.sendMessageTelChatId(chat_id, update, constants.WARNING_API_WRONG_PASSWORD_TEXT, -1,False)
+                                await self.sendMessageTelChatId(chat_id, update, constants.BLOCKED_USER_TEXT, -1,False)
                                 valid = False
-                else:                
-                    error_msg = _json.get("errors",{"msg": ""}).get("msg","")
-                    if(error_msg != ""):
-                        valid = False
-                        if error_msg == constants.WARNING_API_USERNAME_ALREADY_EXIST:
-                            self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL, self.datDefault.copy()).update(
-                                {constants.USERNAME: ""})
-                            await self.sendMessageTelChatId(chat_id, update, constants.WARNING_API_USERNAME_ALREADY_EXIST_TEXT, -1)
-                            self.isErrorFormulary = True
-                            await self.validateFieldTextUser(update, chat_id)
-
-                        if error_msg == constants.WARNING_API_WRONG_PASSWORD or error_msg == constants.WARNING_API_USER_DOES_NOT_EXIST:
-                            self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL, self.datDefault.copy()).update(
-                                {constants.USERNAME: ""})
-                            self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL, self.datDefault.copy()).update(
-                                {constants.PASSWORD: ""})
-
-                            await self.sendMessageTelChatId(chat_id, update, constants.WARNING_API_WRONG_PASSWORD_TEXT, -1)
-                            self.data.get(chat_id).update(
-                                {constants.HIDDEN_MENU: True})
+                                await self.cancelProcess(update, chat_id)
+                                return False
+                        
+                    error_msg = _json.get("errors", {"msg": []}).get("msg")
+                    if(len(error_msg) > 0):
+                        if(type(error_msg) == "list"):
+                            for error in error_msg:
+                                if(error.get("msg") == constants.MISSING):
+                                    await self.sendMessageTelChatId(chat_id, update, constants.WARNING_USER_INTENTS_TEXT, -1)
+                                    valid = False
+                    else:   
+                        error_msg = _json.get("errors",{"msg": ""}).get("msg","")
+                        if(error_msg != ""):
                             valid = False
-                            await self.persistentBtns(update, True, chat_id)
+                            if error_msg == constants.WARNING_API_USERNAME_ALREADY_EXIST:
+                                self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL, self.datDefault.copy()).update(
+                                    {constants.USERNAME: ""})
+                                await self.sendMessageTelChatId(chat_id, update, constants.WARNING_API_USERNAME_ALREADY_EXIST_TEXT, -1)
+                                self.isErrorFormulary = True
+                                await self.validateFieldTextUser(update, chat_id)
 
-                        if error_msg == constants.BLOCKED_USER:
-                            self.isErrorFormulary = True
-                            self.timBlockUser()
-                            self.blockUser = True
-                            self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL, self.datDefault.copy()).update(
-                                {constants.USERNAME: ""})
-                            self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL, self.datDefault.copy()).update(
-                                {constants.PASSWORD: ""})
-                            await self.sendMessageTelChatId(chat_id, update, constants.WARNING_API_WRONG_PASSWORD_TEXT, -1)
-                            await self.sendMessageTelChatId(chat_id, update, constants.BLOCKED_USER_TEXT, -1)
-                            valid = False
                         
             self.data.get(chat_id).update({constants.HIDDEN_MENU: True})
 
@@ -1020,7 +1018,7 @@ class citaAsilobot:
             self.data.get(chat_id).update(
                 {constants.ACTIONS_USER: constants.ACTION_USER_BOT_SIGNUP})
 
-            sucess_Singup = await self.registerUser_validate(update, responseSingoToJson, chat_id)
+            sucess_Singup = await self.registerUser_validate(update, responseSingup, chat_id)
 
             if(sucess_Singup):
                 return True
@@ -1084,16 +1082,38 @@ class citaAsilobot:
         try:
             user = update.message.from_user
             usernameTelegram = user.username
-            self.data.get(chat_id).get(constants.EXTRA_PARAMS).update(
+            self.data.get(chat_id).get(constants.EXTRA_PARAMS,self.extra_params.copy()).update(
                 {constants.USERNAME_TELEGRAM: usernameTelegram})
 
         except Exception as errors:
             self.logger.error(str(errors) + str(traceback.print_exc()), extra=self.data.get(chat_id).get(
                 constants.EXTRA_PARAMS, self.extra_params.copy()))
+            
+    async def setUserBot(self, update, chat_id):
+        self.logger.info(constants.START + ":" + inspect.stack()
+                         [1][3], extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
+        try:
+            user = self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL).get(constants.USERNAME)
+            
+            self.data.get(chat_id).get(constants.EXTRA_PARAMS,self.extra_params.copy()).update(
+                {constants.USERNAME_ASILO_BOT: user})
+        except Exception as errors:
+            self.logger.error(str(errors) + str(traceback.print_exc()), extra=self.data.get(chat_id).get(
+                constants.EXTRA_PARAMS, self.extra_params.copy()))
 
+    async def setChatId(self, update, chat_id):
+        self.logger.info(constants.START + ":" + inspect.stack()
+                         [1][3], extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
+        try:
+            self.data.get(chat_id).get(constants.EXTRA_PARAMS,self.extra_params.copy()).update(
+                {constants.DATA_CHAT_ID: chat_id})
+        except Exception as errors:
+            self.logger.error(str(errors) + str(traceback.print_exc()), extra=self.data.get(chat_id).get(
+                constants.EXTRA_PARAMS, self.extra_params.copy()))
+            
     async def signup(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
-        chat_id = -1
+        await self.valid_user_chat(update)
         
         if(update.message.chat_id is not None):
             chat_id = update.message.chat_id
@@ -1120,7 +1140,7 @@ class citaAsilobot:
         
         self.data.get(chat_id).update({constants.ISLOGIN:False})
         if(self.data.get(chat_id).get(constants.TOKEN_ASILO, "")):
-            await self.sendMessageTelChatId(chat_id, update, constants.WARNING_USER_ALREADY_LOGIN.replace("{username}", self.usernameAsiloBot), -1)
+            await self.sendMessageTelChatId(chat_id, update, constants.WARNING_USER_ALREADY_LOGIN.replace("{username}", self.data.get(chat_id).get(constants.EXTRA_PARAMS).get(constants.USERNAME_ASILO_BOT), "--"))
             return
 
         await self.setUserTelegram(update, chat_id)
@@ -1132,8 +1152,8 @@ class citaAsilobot:
         self.data.get(chat_id).update(
             {constants.ACTIONS_USER: constants.ACTION_USER_BOT_SIGNUP})
 
-        self.logger.info(self.data, extra=self.data.get(
-            chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
+        #self.logger.info(self.data, extra=self.data.get(
+        #    chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
         
         await self.persistentBtns(update, True, chat_id)
         
@@ -1225,7 +1245,7 @@ class citaAsilobot:
 
                     dat = fieldOptional[2]
                     await self.sendesplegableButton(update,
-                                                    dat, fieldOptional[4], fieldOptional[1], 3, 10, chat_id=chat_id)
+                                                    dat, fieldOptional[4], fieldOptional[1], 1, 10, chat_id=chat_id)
         else:
 
             if self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL).get(constants.PROVINCIAGENERAL, -1) == -1:
@@ -1260,16 +1280,19 @@ class citaAsilobot:
 
             if self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL).get(constants.DOC, '') == "":
                 await self.sendMessageTelChatId(chat_id, update, constants.ENTER_DOCUMENT_TEXT, 0,False)
+                await self.clearMsgText(True,update,chat_id=chat_id)
                 return False
 
             if self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL).get(constants.NAME, '') == "":
                 self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL).update(
                     {constants.OPTIONVALIDATE: 1})
                 await self.sendMessageTelChatId(chat_id, update, constants.ENTER_CONFIRM_NAME_TEXT, 1,False)
+                await self.clearMsgText(True,update,chat_id=chat_id)
                 return False
 
             if self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL).get(constants.BIRTH, '') == '':
                 await self.sendMessageTelChatId(chat_id, update, constants.ENTER_CONFIRM_BIRTH_TEXT, 2,False)
+                await self.clearMsgText(True,update,chat_id=chat_id)
                 return False
 
             if self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL).get(constants.COUNTRY, -1) == -1:
@@ -1281,16 +1304,18 @@ class citaAsilobot:
 
             if self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL).get(constants.EMAIL, '') == "":
                 await self.sendMessageTelChatId(chat_id, update, constants.ENTER_CONFIRM_EMAIL_TEXT, 20,False)
-
+                await self.clearMsgText(True,update,chat_id=chat_id)
                 return False
 
         if(self.data.get(chat_id).get(constants.ACTIONS_USER, -1) != constants.ACTION_USER_BOT_UPDATE_PERFIL):
             if self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL).get(constants.USERNAME, '') == "":
                 await self.sendMessageTelChatId(chat_id, update, constants.ENTER_USERNAME_TEXT, 4,False)
+                await self.clearMsgText(True,update,chat_id=chat_id)
                 return False
 
             if self.data.get(chat_id).get(constants.CHAT_DATA_PERFIL).get(constants.PASSWORD, '') == "":
                 await self.sendMessageTelChatId(chat_id, update, constants.ENTER_PASSWORD_TEXT, 5,False)
+                await self.clearMsgText(True,update,chat_id=chat_id)
                 return False
 
         if(self.data.get(chat_id).get(constants.ACTIONS_USER, -1) == constants.ACTION_USER_BOT_SIGNUP):
@@ -1510,7 +1535,7 @@ class citaAsilobot:
             dat = self.arraysCites.plans
 
             await self.sendesplegableButton(update,
-                                            dat, 11, constants.SUCESS_CONFIRM_PLANS, 1, 15, chat_id=chat_id)
+                                            dat, 11, constants.SUCESS_CONFIRM_PLANS, 1, 1, chat_id=chat_id)
 
         except TimedOut as timedOutError:
             error = True
@@ -1529,7 +1554,7 @@ class citaAsilobot:
             dat = self.arraysCites.plans
 
             await self.sendesplegableButton(update,
-                                            dat, 11, constants.SUCESS_CONFIRM_PLANS, 2, 15, chat_id=chat_id)
+                                            dat, 11, constants.SUCESS_CONFIRM_PLANS, 1, 1, chat_id=chat_id)
 
     async def plansMenu(self, update, chat_id):
         error = False
@@ -1539,7 +1564,7 @@ class citaAsilobot:
             dat = self.arraysCites.plans
 
             await self.sendesplegableButton(update,
-                                            dat, 11, constants.SUCESS_CONFIRM_MENU_PLANS, 1, 15, chat_id=chat_id)
+                                            dat, 11, constants.SUCESS_CONFIRM_MENU_PLANS, 1, 1, chat_id=chat_id)
 
         except TimedOut as timedOutError:
             error = True
@@ -1894,6 +1919,7 @@ class citaAsilobot:
             chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
 
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+        
         error = False
         chat_id = -1
         messageId = -1
@@ -1913,6 +1939,7 @@ class citaAsilobot:
         self.data.update({chat_id: {constants.CHAT_DATA_PERFIL:self.datDefault.copy()}})
 
         await self.setTokenUser(chat_id)
+        await self.setChatId(update,chat_id)
 
         self.logger.info(self.data, extra=self.data.get(
             chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
@@ -1923,8 +1950,8 @@ class citaAsilobot:
         self.logger.info(constants.START + ":" + inspect.stack()
                          [1][3], extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
 
-        self.logger.info("data:%s", self.data,
-                         extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
+        #self.logger.info("data:%s", self.data,
+        #                 extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.#extra_params.copy()))
 
         await self.setUserTelegram(update, chat_id)
 
@@ -2007,7 +2034,7 @@ class citaAsilobot:
             chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
 
     async def button(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-
+        
         # updateReceiber = json.dumps(update.to_dict())
         # self.logger.info(updateReceiber, extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS,self.extra_params.copy()))
 
@@ -2015,11 +2042,16 @@ class citaAsilobot:
 
         chat_id = update.callback_query.message.chat.id
         
+        if(self.data.get(chat_id) is None):
+            self.cancelProcess(update,chat_id=chat_id)
+        
         self.logger.info("▶️ " + constants.START + ":" + inspect.stack()
                          [1][3], extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
 
         self.logger.info("data in query:%s", query.data,
                          extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
+        
+        await self.setChatId(update,chat_id)
 
         json_object = {}
         try:
@@ -2671,7 +2703,7 @@ class citaAsilobot:
         self.logger.info(constants.START + ":" + inspect.stack()
                          [1][3], extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
         
-        self.logger.info("el update contiene:%s",update, extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
+        #self.logger.info("el update contiene:%s",update, extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
         
         error = False
 
@@ -2870,11 +2902,38 @@ class citaAsilobot:
         self.logger.info(constants.END, extra=self.data.get(
             chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
 
-    async def handle_text(self, update, context):
-        self.logger.info("⌨️ " + constants.START + ":" + inspect.stack()
-                         [1][3], extra=self.data.get(update.message.chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
+    async def valid_user_chat(self,update,chat_id=-1):
+        chatId=-1
+        #update_toJson = json.dumps(update.to_dict())
+        print(json.dumps(update.to_dict()))
         
-        chat_id = update.message.chat_id
+        if(chat_id != -1 and self.data.get(chat_id) is not None):
+            return self.data.get(chatId).get(constants.DATA_CHAT_ID,chatId)
+        
+        if(update.message and update.message.chat.id):
+            chatId = update.message.chat_id
+                    
+        if update.callback_query and update.callback_query.message.chat.id:
+            chatId = update.callback_query.message.chat.id
+                
+        if(chatId != -1):
+            if(self.data.get(chatId,None) is None):
+                self.data.update({chatId: {constants.DATA_CHAT_ID: chatId}})
+                self.data.get(chatId).get(constants.EXTRA_PARAMS, self.extra_params.copy()).update({constants.DATA_CHAT_ID: chatId})
+                self.data.update({chatId: {constants.CHAT_DATA_PERFIL:self.datDefault.copy()}})
+                self.data.get(chatId).update(
+                            {constants.HIDDEN_MENU: True})
+                await self.persistentBtns(update, True, chatId)
+                
+        return chatId
+        
+    async def handle_text(self, update, context):
+        chat_id = await self.valid_user_chat(update)
+        await self.setChatId(update,chat_id)
+        
+        self.logger.info("⌨️ " + constants.START + ":" + inspect.stack()
+                         [1][3], extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
+        
         text = update.message.text
         messageId = update.message.message_id
             
@@ -2887,6 +2946,8 @@ class citaAsilobot:
                     chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
                 return
 
+            await self.setChatId(update,chat_id)
+            
             await self.setTokenUser(chat_id)
 
             await self.setUserTelegram(update, chat_id)
@@ -2986,6 +3047,7 @@ class citaAsilobot:
                     elif self.data.get(chat_id).get(constants.OPTIONVALIDATE, -1) == 8:
                         await self.LoginUser(update, context)
                     elif self.data.get(chat_id).get(constants.OPTIONVALIDATE, -1) == 9:
+                        await self.clearUpdatePerfil(update,chat_id=chat_id)
                         await self.LogoutUser(update, context, chat_id=chat_id)
                         return True
                     elif self.data.get(chat_id).get(constants.OPTIONVALIDATE, -1) == 12:
@@ -3037,7 +3099,11 @@ class citaAsilobot:
         chat_id = update.message.chat_id
         #await self.clearMsgText(True, update, update.message.chat_id)
         self.data.get(chat_id).update({constants.CHAT_DATA_PERFIL:self.datDefault.copy()})
-
+        
+    async def statusVar(self, update, context):
+            chat_id = update.message.chat_id
+            self.logger.info("* DATA:%s",self.data, extra=self.data.get(chat_id).get(constants.EXTRA_PARAMS, self.extra_params.copy()))
+            
     async def menu(self, update, context):
         update = update
         update = update
@@ -3076,6 +3142,7 @@ class citaAsilobot:
                 CommandHandler("logout", self.LogoutUser))
 
             self.application.add_handler(CommandHandler("menu", self.menu))
+            self.application.add_handler(CommandHandler("statusVar", self.statusVar))
 
             self.application.add_handler(CallbackQueryHandler(self.button))
 

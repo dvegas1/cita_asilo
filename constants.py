@@ -213,7 +213,7 @@ TEXT_FORMAT = "<b>• {titulo}: {texto}</b>\n"
 
 WARNING_USER_INTENTS_TEXT = "😔 Hubo un problema realizando su registro, intentando nuevamente por {} vez, si el problema persiste espere unos minutos e intente nuevamente con el boton de la parte inferior o enviando el comando /signup"
 
-WARNING_USER_NOT_LOGIN_TEXT = "No dispone de cuenta iniciada por favor seleccione el boton Registrarse o envie el comando /signup ."
+WARNING_USER_NOT_LOGIN_TEXT = "No dispone de cuenta iniciada por favor seleccione el boton de la parte inferior [Registrarse] o envie el comando /signup ."
 
 HIDDEN_MENU_TEXT = "👓 Ocultando menu."
 SHOW_MENU_NOT_PAYMENT_TEXT = "👀 Agregando menu para usuario sin pago confirmado."
@@ -257,3 +257,7 @@ WARNING_ERROR_GENERAL = 'Hubo un problema con su sulicitud Por favor intente de 
 WARNING_TIME_OUT = '😕 No se logró entregar el mensaje completamente, esto puede ser por varios rozones, conexión a internet, problemas en la red o tiempo de espera agotado, por favor intente nuevamente.'
 
 RESPONSE_API_CORE = 'Respuesta de api:{msg}.'
+
+
+httpOk=200
+httpOkreply=201
