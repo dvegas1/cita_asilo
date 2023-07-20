@@ -2,39 +2,48 @@
 """
 Created on Mon Feb 13 11:14:10 2023
 
-@author: PC
+@author: DARWIN
 """
-END="🔚 FIN."
-START="🏠 INICIO."
-YES="Si"
 
-ISLOGIN="isLogin"
-
-
-USERNAME="username"
-PASSWORD="password"
-PROVINCIAGENERAL="provinciaGeneral"
-SEDE="sede"
-TRAMITE_OFICINA="tramite_oficina"
-TRAMITE_CUERPO_POLICIAL="tramite_cuperto_policial"
-TYPEDOC="typeDoc"
-DOC="doc"
-NAME="name"
-EMAIL="email"
-BIRTH="birth"
-COUNTRY="country"
-ACTION="action"
-METHOD_PAYMENT="methodPayment"
-
-OPTIONVALIDATE="optionValidate"
-OPTIONVALIDAT_TEXT="optionValidat_Text"
-
-LABEL_INPUTS={
-    "PROVINCIAGENERAL":"Provincia general",
-    "OFICINE":"Oficina"
+URL_BACKEND = "http://localhost:3004/server"
+CONTENT_DATA_TEMP = "/dataTemp"
+DEFAULT_HEADER = {
+    'Content-Type': 'application/x-www-form-urlencoded'
 }
 
-#FORMULARY
+LOGGER_USER = "LOGGER_USER"
+
+END = "🔚 FIN."
+START = "🏠 INICIO."
+YES = "Si"
+
+ISLOGIN = "isLogin"
+
+
+USERNAME = "username"
+PASSWORD = "password"
+PROVINCIAGENERAL = "provinciaGeneral"
+SEDE = "sede"
+TRAMITE_OFICINA = "tramite_oficina"
+TRAMITE_CUERPO_POLICIAL = "tramite_cuperto_policial"
+TYPEDOC = "typeDoc"
+DOC = "doc"
+NAME = "name"
+EMAIL = "email"
+BIRTH = "birth"
+COUNTRY = "country"
+ACTION = "action"
+METHOD_PAYMENT = "methodPayment"
+
+OPTIONVALIDATE = "optionValidate"
+OPTIONVALIDAT_TEXT = "optionValidat_Text"
+
+LABEL_INPUTS = {
+    "PROVINCIAGENERAL": "Provincia general",
+    "OFICINE": "Oficina"
+}
+
+# FORMULARY
 PAYMENT = "payment"
 SUCESS = "sucess"
 PLANS = "plans"
@@ -46,18 +55,18 @@ ENTRAR = "Entrar"
 CERRAR_SESION = "Cerrar sesión"
 HIDDEN = "Ocultar Menú"
 SHOW = "Mostrar Menú"
-LOGOUT="logout"
-INFORMATION="Mis Datos"
-SIGNUP="Registrarse"
-UPDATE_INFORMATION="Mi Perfil"
-CANCELAR="Cancelar ❌"
+LOGOUT = "logout"
+INFORMATION = "Mis Datos"
+SIGNUP = "Registrarse"
+UPDATE_INFORMATION = "Mi Perfil"
+CANCELAR = "Cancelar ❌"
 
-SET_MENU_REFERENCE_PAYMENT="Referencia de pago"
-SET_MENU_METHOD_PAYMENT="Metodo de pago"
-TOKEN_ASILO="tokenAsiloBot"
-EXTRA_PARAMS="extra_params"
-USERNAME_ASILO_BOT="usernameAsiloBot"
-USERNAME_TELEGRAM="usernameTelegram"
+SET_MENU_REFERENCE_PAYMENT = "Referencia de pago"
+SET_MENU_METHOD_PAYMENT = "Metodo de pago"
+TOKEN_ASILO = "tokenAsiloBot"
+EXTRA_PARAMS = "extra_params"
+USERNAME_ASILO_BOT = "usernameAsiloBot"
+USERNAME_TELEGRAM = "usernameTelegram"
 
 
 DATA_CHAT_ID = 'chat_id'
@@ -83,8 +92,9 @@ ACTION_USER_BOT_UPDATE_PERFIL = 4
 
 STAR_SIGNUP_USER_MSG_TEXT = "Ha comenzado el proceso de registro, se le pediran los datos necesarios que solicita la pagina https://sede.administracionespublicas.gob.es/pagina/index/directorio/icpplus, Luego de que ingrese el dato solicitado si todo es correcto se le pedira el siguiente hasta culmitar el proceso."
 
-ERROR_RUN_MAIN_SECONDS =5
-ERROR_RUN_MAIN_FAILE="No se logro iniciar cita_asilo, se intentara luego de: " + str(ERROR_RUN_MAIN_SECONDS) + " Segundos."
+ERROR_RUN_MAIN_SECONDS = 5
+ERROR_RUN_MAIN_FAILE = "No se logro iniciar cita_asilo, se intentara luego de: " + \
+    str(ERROR_RUN_MAIN_SECONDS) + " Segundos."
 
 SUCESS_COUNTRY = 100
 SELECT_COUNTRY_TEXT = "Seleccione su país de nacionalidad:"
@@ -143,7 +153,6 @@ ENTER_USERNAME_TEXT = "Ingrese un Nombre de Usuario:"
 CONFIRM_USERNAME_TEXT = "Confirme su Nombre de Usuario:"
 
 
-
 SUCESS_USER_REGISTER_PASSWORD = 114
 ENTER_PASSWORD_TEXT = "Ingrese una contraseña:"
 CONFIRM_PASSWORD_TEXT = "Confirme su Contraseña."
@@ -153,7 +162,6 @@ CONFIRM_CONFIRM_PAYMENT_TEXT = "Confirme pago realizado"
 
 SUCESS_USER_LOGIN_TEXT = "Usuario ingresado con éxito."
 SUCESS_USER_LOGIN_VALIDATE_TEXT = "Usuario validado con éxito."
-
 
 
 SUCESS_USER_LOGIN_USERNAME = 116
@@ -168,8 +176,8 @@ ENTER_REFERENCE_PAYMENT_TEXT = "Ingrese el Nro de referencia:"
 
 SELECT_INPUT_MODIFY_PERFIL = 120
 SELECT_INPUT_MODIFY_PERFIL_TEXT = "Mi perfil, para modificar seleccioné un dato de la lista:"
-UPDATE_PERFIL_MESSAGE_ID='UPDATE_PERFIL_MESSAGE_ID'
-READY_UPDATE_PERFIL_MESSAGE_ID='READY_UPDATE_PERFIL_MESSAGE_ID'
+UPDATE_PERFIL_MESSAGE_ID = 'UPDATE_PERFIL_MESSAGE_ID'
+READY_UPDATE_PERFIL_MESSAGE_ID = 'READY_UPDATE_PERFIL_MESSAGE_ID'
 
 FINISH_UPDATE = 121
 FINISH_UPDATE_TEXT = "..💭"
@@ -238,8 +246,9 @@ WARNING_API_WRONG_PASSWORD_TEXT = '😣 Nombre de usuario o contraseña incorrec
 
 BLOCKED_USER_TEXT1 = 'EL usuario se encuentra bloqueado, para desbloquear/recuperar su usuario por favor ingrese /recovery.'
 
-BLOCKED_USER_MINUTES_BLOCK=5
-BLOCKED_USER_TEXT = "Límite de intentos excedidos, Por favor espere "+str(BLOCKED_USER_MINUTES_BLOCK)+" minutos e intente nuevamente."
+BLOCKED_USER_MINUTES_BLOCK = 5
+BLOCKED_USER_TEXT = "Límite de intentos excedidos, Por favor espere " + \
+    str(BLOCKED_USER_MINUTES_BLOCK)+" minutos e intente nuevamente."
 
 SUCESS_USER_LOGIN_TEXT = '✔️ Inicio con su cuenta exitosamente.'
 
@@ -247,7 +256,7 @@ USER_PERFIL_UPTADATE_SUCESS_TEXT = "✔️ Datos actualizados con éxito."
 
 WARNING_USER_ALREADY_LOGIN = '⚠️ Ya existe una cuenta iniciada, Cierre session con /logout y registre una nueva.'
 
-#API
+# API
 WARNING_API_USERNAME_ALREADY_EXIST = 'USERNAME_ALREADY_EXISTS'
 WARNING_API_USER_DOES_NOT_EXIST = 'USER_DOES_NOT_EXIST'
 WARNING_API_WRONG_PASSWORD = 'WRONG_PASSWORD'
@@ -259,5 +268,56 @@ WARNING_TIME_OUT = '😕 No se logró entregar el mensaje completamente, esto pu
 RESPONSE_API_CORE = 'Respuesta de api:{msg}.'
 
 
-httpOk=200
-httpOkreply=201
+httpOk = 200
+httpOkreply = 201
+
+TOKEN="token"
+extra_params = {"chat_id": "-1",
+                "usernameAsiloBot": "-", "usernameTelegram": "-", "token": "----"}
+
+datDefault1 = {
+    "provinciaGeneral": 1,
+    "sede": 1,
+    "tramite_oficina": 1,
+    "tramite_cuperto_policial": 1,
+    "typeDoc": 1,
+    "doc": "12312312",
+    "name": "dasdasdada",
+            "birth": 2222,
+            "country": 1,
+            "plans": -1,
+            "action": -1,
+            "payment": False,
+            "methodPayment": -1,
+            "reference_payment": "",
+            "email": "dddd@dddd.com",
+            "sucess": 0,
+            USERNAME: "",
+            PASSWORD: "Mirna.2045+",
+            DATA_CHAT_ID: "-1",
+}
+
+datDefault = {
+    "provinciaGeneral": -1,
+    "sede": -1,
+    "tramite_oficina": -1,
+    "tramite_cuperto_policial": -1,
+    "typeDoc": -1,
+    "doc": "",
+    "name": "",
+            "birth": '',
+            "country": -1,
+            "plans": -1,
+            "action": -1,
+            "payment": False,
+            "methodPayment": -1,
+            "reference_payment": "",
+            "email": "",
+            "sucess": 0,
+            USERNAME: "",
+            PASSWORD: "",
+            DATA_CHAT_ID: "-1",
+}
+
+
+token_acilotBot = "5940401924:AAHUZEP6BtTOWPk2Zvy5uQOatI8b8JySVu8"
